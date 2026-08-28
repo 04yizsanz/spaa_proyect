@@ -31,6 +31,8 @@ return new class extends Migration
 
             // Crea automáticamente las fechas created_at y updated_at
             $table->timestamps();
+
+            $table->foreign("usuario_id")->references("id")->on("usuarios")->onDelete("cascade");
         });
     }
 
