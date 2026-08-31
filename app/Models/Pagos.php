@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Facturas extends Model
+class Pagos extends Model
 {
     use HasFactory;
 
-    protected $table="facturas";
+    protected $table="pagos";
     protected $fillable =[
+        'monto',
+        'metodo',
         'fecha_hora',
-        'subtotal',
-        'impuestos',
-        'total',
-        'pdf_url',
-        'cliente_id'
+        'estado',
+        'codigo_cita'
     ];
+
+    
 }
