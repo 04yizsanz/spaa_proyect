@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('clientes', function (Blueprint $table) {
-            $table->id();
+            $table->id('cliente_id'); // BIGINT UNSIGNED, PK, autoincremental
 
             $table->foreignId('usuario_id')
                 ->unique()
-                ->constrained('usuarios')
+                ->constrained('usuarios', 'usuario_id')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 

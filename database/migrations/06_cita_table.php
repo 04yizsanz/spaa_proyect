@@ -11,18 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('citas', function (Blueprint $table) {
-            $table->id('codigo_cita'); // BIGINT UNSIGNED, PK, autoincremental
+       Schema::create('citas', function (Blueprint $table) {
+    $table->id('citas_id');
+    $table->unsignedBigInteger('codigo_cita')->unique();
 
-            $table->date('fecha'); // Debe ser >= fecha actual al crearse (validar en Form Request)
-            $table->time('hora'); // Debe estar dentro del horario del spa (validar en Form Request)
+    $table->date('fecha');
+    $table->time('hora');
 
-            $table->enum('estado', [
-                'pendiente',
-                'confirmada',
-                'completada',
-                'cancelada',
-            ])->default('pendiente'); // AMBIGUO: catálogo de estados pendiente de confirmar
+    $table->enum('estado', [
+        'pendiente',
+        'confirmada',
+        'completada',
+        'cancelada'
+    ])->default('pendiente');
 
             $table->foreignId('cliente_id')
                 ->constrained('clientes')
@@ -43,9 +44,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('citas');
