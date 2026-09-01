@@ -17,13 +17,14 @@ services:
       - red_db
 
   db:
-    image: mysql:latest
+    image: mysql:8.0
     container_name: c_mysql
+    restart: unless-stopped
     ports:
       - "3308:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: "12345"
+      MYSQL_DATABASE: "spaa_proyect"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -32,6 +33,7 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: c_phpmyadmin
+    restart: unless-stopped
     ports:
       - "8881:80"
     environment:
