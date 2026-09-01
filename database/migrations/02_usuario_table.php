@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('usuarios', function (Blueprint $table) {
-            $table->id();
+            $table->id('usuario_id'); // BIGINT UNSIGNED, PK, autoincremental
 
-            $table->foreignId('rol_id')
-                ->constrained('roles')
+            $table->foreignId('rol_id') // rol_id
+                ->constrained('roles', 'rol_id')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
 

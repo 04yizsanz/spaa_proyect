@@ -6,13 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * Tabla intermedia (débil) que resuelve la relación N:M entre
-     * `facturas` y `servicios`. Requiere que `facturas` (creada en esta
-     * misma tanda) y `servicios` (PK `servicio_id`) ya existan.
-     */
+
     public function up(): void
     {
         Schema::create('factura_servicio', function (Blueprint $table) {

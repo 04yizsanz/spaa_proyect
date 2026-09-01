@@ -11,36 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('citas', function (Blueprint $table) {
-            $table->id('codigo_cita'); // BIGINT UNSIGNED, PK, autoincremental
+       Schema::create('citas', function (Blueprint $table) {
+    $table->id('citas_id');
+    $table->unsignedBigInteger('codigo_cita')->unique();
 
-            $table->date('fecha'); // Debe ser >= fecha actual al crearse (validar en Form Request)
-            $table->time('hora'); // Debe estar dentro del horario del spa (validar en Form Request)
+    $table->date('fecha');
+    $table->time('hora');
 
-            $table->enum('estado', [
-                'pendiente',
-                'confirmada',
-                'completada',
-                'cancelada',
-            ])->default('pendiente'); // AMBIGUO: catálogo de estados pendiente de confirmar
+    $table->enum('estado', [
+        'pendiente',
+        'confirmada',
+        'completada',
+        'cancelada'
+    ])->default('pendiente');
 
-            $table->foreignId('clientes_id')
-                ->constrained(); // FK -> clientes.id (TCliente.ClienteId)
+    $table->unsignedBigInteger('cliente_id');
+    $table->unsignedBigInteger('empleado_id');
+    $table->unsignedBigInteger('servicio_id');
 
-            $table->foreignId('empleado_id')
-                ->constrained(); // FK -> empleados.empleado_id (TEmpleado.EmpleadoId)
-                // Regla de negocio: debe estar disponible en fecha/hora (validar en Service/Request)
+    $table->timestamps();
+});
 
-            $table->foreignId('servicio_id')
-                ->constrained(); // FK -> servicios.servicio_id (TServicio.ServicioId)
-
-            $table->timestamps();
-        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('citas');
