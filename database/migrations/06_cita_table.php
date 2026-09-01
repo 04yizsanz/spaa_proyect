@@ -25,13 +25,23 @@ return new class extends Migration
         'cancelada'
     ])->default('pendiente');
 
-    $table->unsignedBigInteger('cliente_id');
-    $table->unsignedBigInteger('empleado_id');
-    $table->unsignedBigInteger('servicio_id');
+            $table->foreignId('cliente_id')
+                ->constrained('clientes')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
-    $table->timestamps();
-});
+            $table->foreignId('empleado_id')
+                ->constrained('empleados', 'empleado_id')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
+            $table->foreignId('servicio_id')
+                ->constrained('servicios', 'servicio_id')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->timestamps();
+        });
     }
 
 
