@@ -6,49 +6,45 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Empleado extends Model
+class Servicio extends Model
 {
     use HasFactory;
 
     /**
      * Nombre de la tabla asociada.
      */
-    protected $table = 'empleado';
+    protected $table = 'servicio';
 
     /**
      * Clave primaria personalizada.
      */
-    protected $primaryKey = 'empleado_id';
+    protected $primaryKey = 'servicio_id';
 
     /**
      * Atributos asignables masivamente.
      */
     protected $fillable = [
         'nombre',
-        'apellido',
-        'documento',
-        'correo',
-        'telefono',
-        'rol',
-        'salario',
-        'fecha_contratacion',
-        'disponibilidad',
+        'duracion_min',
+        'precio',
+        'descripcion',
+        'activo',
     ];
 
     /**
      * Conversión de tipos.
      */
     protected $casts = [
-        'salario' => 'decimal:2',
-        'fecha_contratacion' => 'date',
-        'disponibilidad' => 'boolean',
+        'duracion_min' => 'integer',
+        'precio' => 'decimal:2',
+        'activo' => 'boolean',
     ];
 
     /**
-     * Citas asignadas a este empleado.
+     * Citas que solicitan este servicio.
      */
     public function citas(): HasMany
     {
-        return $this->hasMany(Cita::class, 'empleado_id', 'empleado_id');
+        return $this->hasMany(Cita::class, 'servicio_id', 'servicio_id');
     }
 }
