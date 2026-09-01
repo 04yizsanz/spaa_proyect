@@ -24,7 +24,7 @@ return new class extends Migration
                 'cancelada',
             ])->default('pendiente'); // AMBIGUO: catálogo de estados pendiente de confirmar
 
-            $table->foreignId('cliente_id')
+            $table->foreignId('clientes_id')
                 ->constrained(); // FK -> clientes.id (TCliente.ClienteId)
 
             $table->foreignId('empleado_id')
