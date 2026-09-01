@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('citas', function (Blueprint $table) {
+        Schema::create('cita', function (Blueprint $table) {
             $table->id('codigo_cita'); // BIGINT UNSIGNED, PK, autoincremental
 
             $table->date('fecha'); // Debe ser >= fecha actual al crearse (validar en Form Request)
@@ -24,7 +24,7 @@ return new class extends Migration
                 'cancelada',
             ])->default('pendiente'); // AMBIGUO: catálogo de estados pendiente de confirmar
 
-            $table->foreignId('clientes_id')
+            $table->foreignId('cliente_id')
                 ->constrained(); // FK -> clientes.id (TCliente.ClienteId)
 
             $table->foreignId('empleado_id')
@@ -43,6 +43,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('citas');
+        Schema::dropIfExists('cita');
     }
 };
