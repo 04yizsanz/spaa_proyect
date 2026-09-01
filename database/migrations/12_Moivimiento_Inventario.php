@@ -17,10 +17,14 @@ return new class extends Migration
             $table->unsignedInteger('cantidad');
             $table->dateTime('fecha_hora');
            $table->string('motivo',100)->nullable();
-           $table->unsignedInteger('producto_id');
+           $table->foreignId('proveedor_id')
+            ->unique()
+            ->constrained('proveedor', 'proveedor_id') 
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
             $table->timestamps();
 
-            $table->foreign('producto_id')->references('id')->on('producto')->onDelete('cascade');
+            
         });
     }
 
