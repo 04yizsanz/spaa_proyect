@@ -24,15 +24,20 @@ return new class extends Migration
                 'cancelada',
             ])->default('pendiente'); // AMBIGUO: catálogo de estados pendiente de confirmar
 
-            $table->foreignId('clientes_id')
-                ->constrained(); // FK -> clientes.id (TCliente.ClienteId)
+            $table->foreignId('cliente_id')
+                ->constrained('clientes')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->foreignId('empleado_id')
-                ->constrained(); // FK -> empleados.empleado_id (TEmpleado.EmpleadoId)
-                // Regla de negocio: debe estar disponible en fecha/hora (validar en Service/Request)
+                ->constrained('empleados', 'empleado_id')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->foreignId('servicio_id')
-                ->constrained(); // FK -> servicios.servicio_id (TServicio.ServicioId)
+                ->constrained('servicios', 'servicio_id')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });

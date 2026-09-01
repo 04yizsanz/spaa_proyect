@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->enum('rol', [
                 'estilista',
-                'terapeuta',
+                'Estetisista',
                 'recepcionista',
                 'admin',
             ]); // AMBIGUO: catálogo de roles pendiente de confirmar con negocio
