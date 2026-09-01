@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cita', function (Blueprint $table) {
+        Schema::create('citas', function (Blueprint $table) {
             $table->id('codigo_cita'); // BIGINT UNSIGNED, PK, autoincremental
 
             $table->date('fecha'); // Debe ser >= fecha actual al crearse (validar en Form Request)
@@ -25,14 +25,19 @@ return new class extends Migration
             ])->default('pendiente'); // AMBIGUO: catálogo de estados pendiente de confirmar
 
             $table->foreignId('cliente_id')
-                ->constrained(); // FK -> clientes.id (TCliente.ClienteId)
+                ->constrained('clientes')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->foreignId('empleado_id')
-                ->constrained(); // FK -> empleados.empleado_id (TEmpleado.EmpleadoId)
-                // Regla de negocio: debe estar disponible en fecha/hora (validar en Service/Request)
+                ->constrained('empleados', 'empleado_id')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->foreignId('servicio_id')
-                ->constrained(); // FK -> servicios.servicio_id (TServicio.ServicioId)
+                ->constrained('servicios', 'servicio_id')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -43,6 +48,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cita');
+        Schema::dropIfExists('citas');
     }
 };
