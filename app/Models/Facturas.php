@@ -18,4 +18,10 @@ class Facturas extends Model
         'pdf_url',
         'cliente_id'
     ];
+
+
+    public function FacturaServicio(){
+        return $this->belongsTo(FacturaServicio::class);
+    }  
+    
 }

@@ -18,5 +18,8 @@ class Pagos extends Model
         'codigo_cita'
     ];
 
+    public function citas(){
+        return $this->hasMany(Citas::class);
+    }
     
 }
