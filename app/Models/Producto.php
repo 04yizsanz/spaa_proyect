@@ -18,11 +18,14 @@ class Producto extends Model
 
      ];
 
-// 
+
          public function proveedor(){
             return $this->belongsTo(proveedor::class);
          }
-
+        public function movimiento_inventario()
+    {
+        return $this->hasMany(MovimientoInventario::class,);
+    }
          
          // hasMany: muchos 
 // hasOne: relacion de 1 a 1 
