@@ -8,7 +8,7 @@ class Producto extends Model
 {
      use HasFactory; //Hasfactory se va a encargar de crear datos de prueba
     
-     protected $table="producto";
+     protected $table="productos";
      protected $fillable = [ 
         "nombre",
         "cantidad",
