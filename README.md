@@ -191,38 +191,3 @@ Cada tabla incluye tipo de dato en MySQL y su equivalente en migración Laravel.
 | TProveedor | TProducto | 1:N | TProducto.ProveedorId | Un proveedor suministra muchos productos |
 | TProducto | TMovimientoInventario | 1:N | TMovimientoInventario.ProductoId | Un producto tiene muchos movimientos de inventario |
 
-### Relaciones no definidas / a confirmar
-
-| Tabla | Observación |
-|---|---|
-| TVisualizacionAR | No tiene FK hacia TCliente, pero cada sesión de AR debería pertenecer a un cliente. |
-| TPrediccionIA | No tiene FK hacia TServicio ni TProducto, aunque sus campos lo sugieren. |
-| TCampanaMarketing | No tiene ninguna FK; si se dirige a clientes o promociona servicios, faltan relaciones. |
-
----
-
-## Resumen General
-
-| Métrica | Valor |
-|---|---|
-| Total de tablas | 13 |
-| Total de atributos | 76 |
-| Relaciones 1:N | 8 |
-| Relaciones N:M | 1 (TFactura <-> TServicio, vía TFacturaServicio) |
-| Tablas intermedias | 1 (TFacturaServicio) |
-| Entidades débiles | 1 (TFacturaServicio) |
-| Tablas sin relaciones definidas | 3 (TCampanaMarketing, TPrediccionIA, TVisualizacionAR) |
-
----
-
-## Preguntas pendientes antes de cerrar el diccionario al 100%
-
-| # | Pregunta |
-|---|---|
-| 1 | TEmpleado.Disponibilidad: ¿booleano simple o tabla de horarios? |
-| 2 | TPrediccionIA (ServiciosTop, DemandaPorFranja, RecomendacionesCompra): ¿JSON está bien, o se normaliza en tablas separadas? |
-| 3 | TVisualizacionAR: ¿falta la FK hacia TCliente? ¿EstiloSeleccionado es catálogo fijo o texto libre? |
-| 4 | TCampanaMarketing: ¿se vincula a clientes o a servicios promocionados? |
-| 5 | TProducto.Precio: ¿es costo, venta, o se necesitan ambos campos? |
-
-> **Nota técnica Laravel:** se asume snake_case en columnas (Eloquent). Si se mantienen los nombres originales en PascalCase, declarar `$table` y `$primaryKey` manualmente en cada modelo.
