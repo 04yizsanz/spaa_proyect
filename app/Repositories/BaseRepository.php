@@ -33,11 +33,13 @@ class BaseRepository implements BaseInterface
     {
         $registro = $this->model->find($id); 
 
+
         if (! $registro) {
             return null;
         }
 
         $registro->update($data);
+
 
         return $registro->fresh();
     }
