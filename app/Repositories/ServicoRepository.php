@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Servicio;
-use App\Repositories\Interfaces\ServicioInterface;
+use App\Interfaces\ServicioInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class ServicioRepository extends BaseRepository implements ServicioInterface

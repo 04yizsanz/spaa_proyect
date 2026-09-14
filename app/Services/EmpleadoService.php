@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\EmpleadoInterface;
+use App\Interfaces\EmpleadoInterface;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Empleado;
 
