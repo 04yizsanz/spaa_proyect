@@ -20,7 +20,6 @@ return new class extends Migration
             $table->timestamps();
 
                       $table->foreignId('producto_id')
-                ->unique()
                 ->constrained('producto', 'producto_id') 
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

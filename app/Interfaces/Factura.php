@@ -6,13 +6,13 @@ use DateTime;
 interface FacturaInterface extends BaseInterface
 
 {
-    public function getByFechaHora(dateTime $fecheHora);
+    public function getByFechaHora(dateTime $fechaHora);
 
-    public function getBySubtotal(decimal $subtotal);
+    public function getBySubtotal(float $subtotal);
 
-    public function getByImpuestos(decimal $impuestos);
+    public function getByImpuestos(float $impuestos);
 
-    public function getByTotal(decimal $total);
+    public function getByTotal(float $total);
 
 
 }

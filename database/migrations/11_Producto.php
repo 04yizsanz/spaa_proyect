@@ -19,7 +19,6 @@ return new class extends Migration
             $table->decimal('precio',10,2);
             $table->date('fecha_registro');
            $table->foreignId('proveedor_id')
-                ->unique()
                 ->constrained('proveedor', 'proveedor_id') 
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
