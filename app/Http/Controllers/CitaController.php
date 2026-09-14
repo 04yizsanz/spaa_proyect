@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCitaRequest;
-use App\Http\Requests\UpdateCitaRequest;
+use App\Http\Requests\Cita\StoreCitaRequest;
+use App\Http\Requests\Cita\UpdateCitaRequest;
 use App\Services\CitaService;
 use Illuminate\Http\JsonResponse;
 use InvalidArgumentException;

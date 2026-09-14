@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Empleado;
-use App\Repositories\Interfaces\EmpleadoInterface;
+use App\Interfaces\EmpleadoInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class EmpleadoRepository extends BaseRepository implements EmpleadoInterface

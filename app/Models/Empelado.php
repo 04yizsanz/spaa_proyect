@@ -13,7 +13,7 @@ class Empleado extends Model
     /**
      * Nombre de la tabla asociada.
      */
-    protected $table = 'empleado';
+    protected $table = 'empleados';
 
     /**
      * Clave primaria personalizada.

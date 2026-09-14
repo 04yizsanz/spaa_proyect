@@ -13,17 +13,16 @@ class Cita extends Model
     /**
      * Nombre de la tabla asociada.
      */
-    protected $table = 'cita';
-
+    protected $table = 'citas';
     /**
      * Clave primaria personalizada.
      */
-    protected $primaryKey = 'codigo_cita';
-
+    protected $primaryKey = 'citas_id';
     /**
      * Atributos asignables masivamente.
      */
     protected $fillable = [
+        'codigo_cita',
         'fecha',
         'hora',
         'estado',

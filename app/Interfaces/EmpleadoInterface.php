@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Repositories\Interfaces;
+namespace App\Interfaces;
 
 use App\Models\Empleado;
 use Illuminate\Database\Eloquent\Collection;
+use App\Interfaces\BaseInterface;
+
 
 interface EmpleadoInterface extends BaseInterface
 {
