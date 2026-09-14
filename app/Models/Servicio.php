@@ -13,8 +13,7 @@ class Servicio extends Model
     /**
      * Nombre de la tabla asociada.
      */
-    protected $table = 'servicio';
-
+    protected $table = 'servicios';
     /**
      * Clave primaria personalizada.
      */
