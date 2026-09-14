@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreEmpleadoRequest;
-use App\Http\Requests\UpdateEmpleadoRequest;
+use App\Http\Requests\Empleado\StoreEmpleadoRequest;
+use App\Http\Requests\Empleado\UpdateEmpleadoRequest;
 use App\Services\EmpleadoService;
 use Illuminate\Http\JsonResponse;
 

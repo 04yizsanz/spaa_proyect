@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\ServicioInterface;
+use App\Interfaces\ServicioInterface;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Servicio;
 
@@ -29,7 +29,7 @@ class ServicioService
 
     public function update(int $id, array $data): bool
     {
-        return $this->servicioRepository->update($id, $data);
+        return $this->servicioRepository->update($data,$id);
     }
 
     public function delete(int $id): bool
