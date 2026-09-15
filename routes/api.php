@@ -5,10 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\CitaController;
-use App\Http\Controllers\RolController;
-use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\ClienteController;
-use App\Models\Cliente;
+use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\PagoController;
+use App\Http\Controllers\FacturaServicioController;
+
+
 
 // Empleados
 Route::apiResource('empleados', EmpleadoController::class);
@@ -19,11 +20,11 @@ Route::apiResource('servicios', ServicioController::class);
 // Citas
 Route::apiResource('citas', CitaController::class);
 
-// Rol
-Route::apiResource('roles', RolController::class);
+// Facturas
+Route::apiResource('facturas', FacturaController::class);
 
-// Cliente
-Route::apiResource('clientes', ClienteController::class);
+// Pagos
+Route::apiResource('pagos', PagoController::class);
 
-// Usuario
-Route::apiResource('usuarios',UsuarioController::class);
+// Facturas de servicios
+Route::apiResource('factura-servicios', FacturaServicioController::class);
