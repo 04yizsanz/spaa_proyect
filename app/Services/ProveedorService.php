@@ -12,12 +12,12 @@ class ProveedorService
 
     public function list()
     {
-        return $this->proveedorRepository->All();
+        return $this->proveedorRepository->getAll();
     }
 
     public function show(int $id)
     {
-        return $this->proveedorRepository->find($id);
+        return $this->proveedorRepository->getById($id);
     }
 
     public function store(array $data)
@@ -33,20 +33,5 @@ class ProveedorService
     public function destroy(int $id)
     {
         return $this->proveedorRepository->delete($id);
-    }
-
-    public function getByContacto(string $contacto)
-    {
-        return $this->proveedorRepository->getByContacto($contacto);
-    }
-
-    public function getByEmail(string $email)
-    {
-        return $this->proveedorRepository->getByEmail($email);
-    }
-
-    public function getByRegistroTributario(string $registro_tributario)
-    {
-        return $this->proveedorRepository->getByRegistro_tributario($registro_tributario);
     }
 }

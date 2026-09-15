@@ -8,6 +8,10 @@ use App\Interfaces\EmpleadoInterface;
 use App\Repositories\EmpleadoRepository;
 use App\Interfaces\ServicioInterface;
 use App\Repositories\ServicioRepository;
+use App\Interfaces\ProveedorInterface;
+use App\Repositories\ProveedorRepository;
+use App\Interfaces\ProductoInterface;
+use App\Repositories\ProductoRepository;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +35,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ServicioInterface::class,
             ServicioRepository::class
+        );
+
+        $this->app->bind(
+            ProveedorInterface::class,
+            ProveedorRepository::class
+        );
+
+        $this->app->bind(
+            ProductoInterface::class,
+           ProductoRepository::class
         );
     }
 
