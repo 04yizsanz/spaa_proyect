@@ -2,168 +2,89 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\RolInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\Rol\StoreRolRequest;
+use App\Http\Requests\Rol\UpdateRolRequest;
+use App\Services\RolService;
+use Illuminate\Http\JsonResponse;
+use InvalidArgumentException;
 
 class RolController extends Controller
 {
-    protected RolInterface $rolRepository;
+    public function __construct(
+        protected RolService $rolService
+    ) {}
 
-    public function __construct(RolInterface $rolRepository)
+    public function index(): JsonResponse
     {
-        $this->rolRepository = $rolRepository;
+        return response()->json($this->rolService->getAll());
     }
 
-    /**
-     * Mostrar todos los roles.
-     */
-    public function index()
+    public function show(int $id): JsonResponse
     {
-        $roles = $this->rolRepository->getAll();
+        $rol = $this->rolService->getById($id);
 
-        return response()->json($roles);
-    }
-
-    /**
-     * Mostrar un rol específico.
-     */
-    public function show(int $id)
-    {
-        $rol = $this->rolRepository->getById($id);
-
-        if (!$rol) {
-            return response()->json([
-                'message' => 'Rol no encontrado'
-            ], 404);
+        if (! $rol) {
+            return response()->json(['message' => 'Rol no encontrado'], 404);
         }
 
         return response()->json($rol);
     }
 
-    /**
-     * Crear un nuevo rol.
-     */
-    public function store(Request $request)
+    public function store(StoreRolRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'nombre' => 'required|string|max:50|unique:roles,nombre',
-            'descripcion' => 'nullable|string|max:255',
-            'estado' => 'required|boolean',
-        ]);
-
-        $rol = $this->rolRepository->create($data);
-
-        return response()->json([
-            'message' => 'Rol creado correctamente',
-            'rol' => $rol
-        ], 201);
-    }
-
-    /**
-     * Actualizar un rol.
-     */
-    public function update(Request $request, int $id)
-    {
-        $rol = $this->rolRepository->getById($id);
-
-        if (!$rol) {
-            return response()->json([
-                'message' => 'Rol no encontrado'
-            ], 404);
+        try {
+            $rol = $this->rolService->create($request->validated());
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
         }
 
-        $data = $request->validate([
-            'nombre' => 'sometimes|required|string|max:50|unique:roles,nombre,' . $id . ',rol_id',
-            'descripcion' => 'nullable|string|max:255',
-            'estado' => 'sometimes|required|boolean',
-        ]);
-
-        $rolActualizado = $this->rolRepository->update($data, $id);
-
-        return response()->json([
-            'message' => 'Rol actualizado correctamente',
-            'rol' => $rolActualizado
-        ]);
+        return response()->json($rol, 201);
     }
 
-    /**
-     * Desactivar un rol.
-     *
-     * No se elimina físicamente porque la tabla
-     * usuarios tiene una restricción ON DELETE RESTRICT.
-     */
-    public function destroy(int $id)
+    public function update(UpdateRolRequest $request, int $id): JsonResponse
     {
-        $rol = $this->rolRepository->getById($id);
-
-        if (!$rol) {
-            return response()->json([
-                'message' => 'Rol no encontrado'
-            ], 404);
+        try {
+            $updated = $this->rolService->update($id, $request->validated());
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
         }
 
-        $rol = $this->rolRepository->updateEstado($id, false);
-
-        return response()->json([
-            'message' => 'Rol desactivado correctamente',
-            'rol' => $rol
-        ]);
-    }
-
-    /**
-     * Obtener solamente los roles activos.
-     */
-    public function activos()
-    {
-        $roles = $this->rolRepository->findActivos();
-
-        return response()->json($roles);
-    }
-
-    /**
-     * Buscar un rol por nombre.
-     */
-    public function buscarPorNombre(Request $request)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:50',
-        ]);
-
-        $rol = $this->rolRepository->getByName($request->nombre);
-
-        if (!$rol) {
-            return response()->json([
-                'message' => 'Rol no encontrado'
-            ], 404);
+        if (! $updated) {
+            return response()->json(['message' => 'Rol no encontrado'], 404);
         }
 
-        return response()->json($rol);
+        return response()->json(['message' => 'Rol actualizado correctamente']);
     }
 
-    /**
-     * Activar o desactivar un rol.
-     */
-    public function actualizarEstado(Request $request, int $id)
+    public function destroy(int $id): JsonResponse
     {
-        $data = $request->validate([
-            'estado' => 'required|boolean',
-        ]);
+        $deleted = $this->rolService->delete($id);
 
-        $rol = $this->rolRepository->updateEstado(
-            $id,
-            $data['estado']
-        );
-
-        if (!$rol) {
-            return response()->json([
-                'message' => 'Rol no encontrado'
-            ], 404);
+        if (! $deleted) {
+            return response()->json(['message' => 'Rol no encontrado'], 404);
         }
 
-        return response()->json([
-            'message' => 'Estado del rol actualizado correctamente',
-            'rol' => $rol
-        ]);
+        return response()->json(['message' => 'Rol eliminado correctamente']);
+    }
+
+    public function activos(): JsonResponse
+    {
+        return response()->json($this->rolService->getActivos());
+    }
+
+    public function porNombre(string $nombre): JsonResponse
+    {
+        return response()->json($this->rolService->getByNombre($nombre));
+    }
+
+    public function cambiarEstado(int $id): JsonResponse
+    {
+        $cambiado = $this->rolService->cambiarEstado($id, request()->input('estado'));
+
+        if (! $cambiado) {
+            return response()->json(['message' => 'Rol no encontrado'], 404);
+        }
+
+        return response()->json(['message' => 'Estado actualizado correctamente']);
     }
 }
-

@@ -2,153 +2,84 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\UsuarioInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\Usuario\StoreUsuarioRequest;
+use App\Http\Requests\Usuario\UpdateUsuarioRequest;
+use App\Services\UsuarioService;
+use Illuminate\Http\JsonResponse;
+use InvalidArgumentException;
 
 class UsuarioController extends Controller
 {
-    protected UsuarioInterface $usuarioRepository;
+    public function __construct(
+        protected UsuarioService $usuarioService
+    ) {}
 
-    public function __construct(UsuarioInterface $usuarioRepository)
+    public function index(): JsonResponse
     {
-        $this->usuarioRepository = $usuarioRepository;
+        return response()->json($this->usuarioService->getAll());
     }
 
-    /**
-     * Mostrar todos los usuarios.
-     */
-    public function index()
+    public function show(int $id): JsonResponse
     {
-        $usuarios = $this->usuarioRepository->getAll();
+        $usuario = $this->usuarioService->getById($id);
 
-        return response()->json($usuarios);
-    }
-
-    /**
-     * Mostrar un usuario específico.
-     */
-    public function show(int $id)
-    {
-        $usuario = $this->usuarioRepository->getById($id);
-
-        if (!$usuario) {
-            return response()->json([
-                'message' => 'Usuario no encontrado'
-            ], 404);
+        if (! $usuario) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
         return response()->json($usuario);
     }
 
-    /**
-     * Crear un nuevo usuario.
-     */
-    public function store(Request $request)
+    public function store(StoreUsuarioRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'rol_id' => 'required|integer|exists:roles,rol_id',
-            'nombre' => 'required|string|max:80',
-            'apellido' => 'required|string|max:80',
-            'documento' => 'required|string|max:20|unique:usuarios,documento',
-            'email' => 'required|email|max:150|unique:usuarios,email',
-            'telefono' => 'nullable|string|max:20',
-            'password' => 'required|string|max:255',
-            'estado' => 'required|boolean',
-        ]);
-
-        $usuario = $this->usuarioRepository->create($data);
-
-        return response()->json([
-            'message' => 'Usuario creado correctamente',
-            'usuario' => $usuario
-        ], 201);
-    }
-
-    /**
-     * Actualizar un usuario.
-     */
-    public function update(Request $request, int $id)
-    {
-        $usuario = $this->usuarioRepository->getById($id);
-
-        if (!$usuario) {
-            return response()->json([
-                'message' => 'Usuario no encontrado'
-            ], 404);
+        try {
+            $usuario = $this->usuarioService->create($request->validated());
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
         }
 
-        $data = $request->validate([
-            'rol_id' => 'sometimes|required|integer|exists:roles,rol_id',
-            'nombre' => 'sometimes|required|string|max:80',
-            'apellido' => 'sometimes|required|string|max:80',
-            'documento' => 'sometimes|required|string|max:20|unique:usuarios,documento,' . $id . ',usuario_id',
-            'email' => 'sometimes|required|email|max:150|unique:usuarios,email,' . $id . ',usuario_id',
-            'telefono' => 'nullable|string|max:20',
-            'password' => 'sometimes|required|string|max:255',
-            'estado' => 'sometimes|required|boolean',
-        ]);
-
-        $usuarioActualizado = $this->usuarioRepository->update($data, $id);
-
-        return response()->json([
-            'message' => 'Usuario actualizado correctamente',
-            'usuario' => $usuarioActualizado
-        ]);
+        return response()->json($usuario, 201);
     }
 
-    /**
-     * Eliminar un usuario.
-     */
-    public function destroy(int $id)
+    public function update(UpdateUsuarioRequest $request, int $id): JsonResponse
     {
-        $usuario = $this->usuarioRepository->getById($id);
-
-        if (!$usuario) {
-            return response()->json([
-                'message' => 'Usuario no encontrado'
-            ], 404);
+        try {
+            $updated = $this->usuarioService->update($id, $request->validated());
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
         }
 
-        $this->usuarioRepository->delete($id);
+        if (! $updated) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
 
-        return response()->json([
-            'message' => 'Usuario eliminado correctamente'
-        ]);
+        return response()->json(['message' => 'Usuario actualizado correctamente']);
     }
 
-    /**
-     * Buscar usuarios por rol.
-     */
-    public function buscarPorRol(int $idRol)
+    public function destroy(int $id): JsonResponse
     {
-        $usuarios = $this->usuarioRepository->getByRol($idRol);
+        $deleted = $this->usuarioService->delete($id);
 
-        return response()->json($usuarios);
+        if (! $deleted) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        return response()->json(['message' => 'Usuario eliminado correctamente']);
     }
 
-    /**
-     * Obtener usuarios por estado.
-     */
-    public function buscarPorEstado(bool $status)
+    public function porRol(int $rolId): JsonResponse
     {
-        $usuarios = $this->usuarioRepository->getByEstatus($status);
-
-        return response()->json($usuarios);
+        return response()->json($this->usuarioService->getByRol($rolId));
     }
 
-    /**
-     * Buscar usuarios por nombre.
-     */
-    public function buscarPorNombre(Request $request)
+    public function cambiarEstado(int $id): JsonResponse
     {
-        $request->validate([
-            'nombre' => 'required|string|max:80',
-        ]);
+        $cambiado = $this->usuarioService->cambiarEstado($id, request()->input('estado'));
 
-        $usuarios = $this->usuarioRepository->getByName(
-            $request->nombre
-        );
+        if (! $cambiado) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
 
-        return response()->json($usuarios);
+        return response()->json(['message' => 'Estado actualizado correctamente']);
     }
 }
