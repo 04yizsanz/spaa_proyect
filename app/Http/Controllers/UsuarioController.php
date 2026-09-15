@@ -2,153 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\UsuarioInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\Usuario\StoreUsuarioRequest;
+use App\Http\Requests\Usuario\UpdateUsuarioRequest;
+use App\Services\UsuarioService;
+use Illuminate\Http\JsonResponse;
 
 class UsuarioController extends Controller
 {
-    protected UsuarioInterface $usuarioRepository;
+    public function __construct(
+        protected UsuarioService $usuarioService
+    ) {}
 
-    public function __construct(UsuarioInterface $usuarioRepository)
+    public function index(): JsonResponse
     {
-        $this->usuarioRepository = $usuarioRepository;
+        return response()->json($this->usuarioService->getAll());
     }
 
-    /**
-     * Mostrar todos los usuarios.
-     */
-    public function index()
+    public function show(int $id): JsonResponse
     {
-        $usuarios = $this->usuarioRepository->getAll();
+        $usuario = $this->usuarioService->getById($id);
 
-        return response()->json($usuarios);
-    }
-
-    /**
-     * Mostrar un usuario específico.
-     */
-    public function show(int $id)
-    {
-        $usuario = $this->usuarioRepository->getById($id);
-
-        if (!$usuario) {
-            return response()->json([
-                'message' => 'Usuario no encontrado'
-            ], 404);
+        if (! $usuario) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
         return response()->json($usuario);
     }
 
-    /**
-     * Crear un nuevo usuario.
-     */
-    public function store(Request $request)
+    public function store(StoreUsuarioRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'rol_id' => 'required|integer|exists:roles,rol_id',
-            'nombre' => 'required|string|max:80',
-            'apellido' => 'required|string|max:80',
-            'documento' => 'required|string|max:20|unique:usuarios,documento',
-            'email' => 'required|email|max:150|unique:usuarios,email',
-            'telefono' => 'nullable|string|max:20',
-            'password' => 'required|string|max:255',
-            'estado' => 'required|boolean',
-        ]);
+        $usuario = $this->usuarioService->create($request->validated());
 
-        $usuario = $this->usuarioRepository->create($data);
-
-        return response()->json([
-            'message' => 'Usuario creado correctamente',
-            'usuario' => $usuario
-        ], 201);
+        return response()->json($usuario, 201);
     }
 
-    /**
-     * Actualizar un usuario.
-     */
-    public function update(Request $request, int $id)
+    public function update(UpdateUsuarioRequest $request, int $id): JsonResponse
     {
-        $usuario = $this->usuarioRepository->getById($id);
+        $updated = $this->usuarioService->update($id, $request->validated());
 
-        if (!$usuario) {
-            return response()->json([
-                'message' => 'Usuario no encontrado'
-            ], 404);
+        if (! $updated) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
-        $data = $request->validate([
-            'rol_id' => 'sometimes|required|integer|exists:roles,rol_id',
-            'nombre' => 'sometimes|required|string|max:80',
-            'apellido' => 'sometimes|required|string|max:80',
-            'documento' => 'sometimes|required|string|max:20|unique:usuarios,documento,' . $id . ',usuario_id',
-            'email' => 'sometimes|required|email|max:150|unique:usuarios,email,' . $id . ',usuario_id',
-            'telefono' => 'nullable|string|max:20',
-            'password' => 'sometimes|required|string|max:255',
-            'estado' => 'sometimes|required|boolean',
-        ]);
-
-        $usuarioActualizado = $this->usuarioRepository->update($data, $id);
-
-        return response()->json([
-            'message' => 'Usuario actualizado correctamente',
-            'usuario' => $usuarioActualizado
-        ]);
+        return response()->json(['message' => 'Usuario actualizado correctamente']);
     }
 
-    /**
-     * Eliminar un usuario.
-     */
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
-        $usuario = $this->usuarioRepository->getById($id);
+        $deleted = $this->usuarioService->delete($id);
 
-        if (!$usuario) {
-            return response()->json([
-                'message' => 'Usuario no encontrado'
-            ], 404);
+        if (! $deleted) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
-        $this->usuarioRepository->delete($id);
-
-        return response()->json([
-            'message' => 'Usuario eliminado correctamente'
-        ]);
+        return response()->json(['message' => 'Usuario eliminado correctamente']);
     }
 
-    /**
-     * Buscar usuarios por rol.
-     */
-    public function buscarPorRol(int $idRol)
+    public function porRol(int $rolId): JsonResponse
     {
-        $usuarios = $this->usuarioRepository->getByRol($idRol);
-
-        return response()->json($usuarios);
+        return response()->json($this->usuarioService->getByRol($rolId));
     }
 
-    /**
-     * Obtener usuarios por estado.
-     */
-    public function buscarPorEstado(bool $status)
+    public function porEstatus(bool $estado): JsonResponse
     {
-        $usuarios = $this->usuarioRepository->getByEstatus($status);
-
-        return response()->json($usuarios);
+        return response()->json($this->usuarioService->getByEstatus($estado));
     }
 
-    /**
-     * Buscar usuarios por nombre.
-     */
-    public function buscarPorNombre(Request $request)
+    public function porNombre(string $nombre): JsonResponse
     {
-        $request->validate([
-            'nombre' => 'required|string|max:80',
-        ]);
-
-        $usuarios = $this->usuarioRepository->getByName(
-            $request->nombre
-        );
-
-        return response()->json($usuarios);
+        return response()->json($this->usuarioService->getByNombre($nombre));
     }
 }

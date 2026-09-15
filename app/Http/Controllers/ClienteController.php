@@ -2,159 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\ClienteInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\Cliente\StoreClienteRequest;
+use App\Http\Requests\Cliente\UpdateClienteRequest;
+use App\Services\ClienteService;
+use Illuminate\Http\JsonResponse;
 
 class ClienteController extends Controller
 {
-    protected ClienteInterface $clienteRepository;
+    public function __construct(
+        protected ClienteService $clienteService
+    ) {}
 
-    public function __construct(ClienteInterface $clienteRepository)
+    public function index(): JsonResponse
     {
-        $this->clienteRepository = $clienteRepository;
+        return response()->json($this->clienteService->getAll());
     }
 
-    /**
-     * Mostrar todos los clientes.
-     */
-    public function index()
+    public function show(int $id): JsonResponse
     {
-        $clientes = $this->clienteRepository->getAll();
+        $cliente = $this->clienteService->getById($id);
 
-        return response()->json($clientes);
-    }
-
-    /**
-     * Mostrar un cliente específico.
-     */
-    public function show(int $id)
-    {
-        $cliente = $this->clienteRepository->getById($id);
-
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Cliente no encontrado'
-            ], 404);
+        if (! $cliente) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
         return response()->json($cliente);
     }
 
-    /**
-     * Crear un nuevo cliente.
-     */
-    public function store(Request $request)
+    public function store(StoreClienteRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'usuario_id' => 'required|integer|exists:usuarios,usuario_id|unique:clientes,usuario_id',
-            'fecha_nacimiento' => 'nullable|date',
-            'preferencias' => 'nullable|string',
-        ]);
+        $cliente = $this->clienteService->create($request->validated());
 
-        $cliente = $this->clienteRepository->create($data);
-
-        return response()->json([
-            'message' => 'Cliente creado correctamente',
-            'cliente' => $cliente
-        ], 201);
+        return response()->json($cliente, 201);
     }
 
-    /**
-     * Actualizar un cliente.
-     */
-    public function update(Request $request, int $id)
+    public function update(UpdateClienteRequest $request, int $id): JsonResponse
     {
-        $cliente = $this->clienteRepository->getById($id);
+        $updated = $this->clienteService->update($id, $request->validated());
 
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Cliente no encontrado'
-            ], 404);
+        if (! $updated) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
-        $data = $request->validate([
-            'usuario_id' => 'sometimes|required|integer|exists:usuarios,usuario_id|unique:clientes,usuario_id,' . $id . ',cliente_id',
-            'fecha_nacimiento' => 'nullable|date',
-            'preferencias' => 'nullable|string',
-        ]);
-
-        $clienteActualizado = $this->clienteRepository->update($data, $id);
-
-        return response()->json([
-            'message' => 'Cliente actualizado correctamente',
-            'cliente' => $clienteActualizado
-        ]);
+        return response()->json(['message' => 'Cliente actualizado correctamente']);
     }
 
-    /**
-     * Eliminar un cliente.
-     */
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
-        $cliente = $this->clienteRepository->getById($id);
+        $deleted = $this->clienteService->delete($id);
 
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Cliente no encontrado'
-            ], 404);
+        if (! $deleted) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
-        $this->clienteRepository->delete($id);
-
-        return response()->json([
-            'message' => 'Cliente eliminado correctamente'
-        ]);
+        return response()->json(['message' => 'Cliente eliminado correctamente']);
     }
 
-    /**
-     * Buscar clientes por nombre.
-     */
-    public function buscarPorNombre(Request $request)
+    public function porNombre(string $nombre): JsonResponse
     {
-        $request->validate([
-            'nombre' => 'required|string|max:80',
-        ]);
-
-        $clientes = $this->clienteRepository->getByName(
-            $request->nombre
-        );
-
-        return response()->json($clientes);
+        return response()->json($this->clienteService->getByNombre($nombre));
     }
 
-    /**
-     * Buscar clientes por apellido.
-     */
-    public function buscarPorApellido(Request $request)
+    public function porApellido(string $apellido): JsonResponse
     {
-        $request->validate([
-            'apellido' => 'required|string|max:80',
-        ]);
-
-        $clientes = $this->clienteRepository->getByLastname(
-            $request->apellido
-        );
-
-        return response()->json($clientes);
+        return response()->json($this->clienteService->getByApellido($apellido));
     }
 
-    /**
-     * Buscar un cliente por documento.
-     */
-    public function buscarPorDocumento(Request $request)
+    public function porDocumento(string $documento): JsonResponse
     {
-        $request->validate([
-            'documento' => 'required|string|max:20',
-        ]);
+        $cliente = $this->clienteService->getByDocumento($documento);
 
-        $cliente = $this->clienteRepository->getByDocument(
-            $request->documento
-        );
-
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Cliente no encontrado'
-            ], 404);
+        if (! $cliente) {
+            return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
         return response()->json($cliente);
