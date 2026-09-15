@@ -3,50 +3,68 @@
 namespace App\Services;
 
 use App\Interfaces\RolInterface;
+use InvalidArgumentException;
 
 class RolService
 {
     public function __construct(
-        private RolInterface $rolRepository
-    ) {
-    }
+        protected RolInterface $rolRepository
+    ) {}
 
-    public function list()
+    public function getAll()
     {
-        return $this->rolRepository->getAll();
+        return $this->rolRepository->all();
     }
 
-    public function store(array $datos)
+    public function getById(int $id)
     {
-        return $this->rolRepository->create($datos);
+        return $this->rolRepository->find($id);
     }
 
-    public function show(int $id)
+    public function create(array $data)
     {
-        return $this->rolRepository->getById($id);
+        return $this->rolRepository->create($data);
     }
 
-    public function update(int $id, array $datos)
+    public function update(int $id, array $data)
     {
-        return $this->rolRepository->update($datos, $id);
+        $rol = $this->rolRepository->find($id);
+
+        if (! $rol) {
+            return null;
+        }
+
+        return $this->rolRepository->update($id, $data);
     }
 
-    public function destroy(int $id)
+    public function delete(int $id)
     {
-        return $this->rolRepository->updateEstado($id, false);
+        $rol = $this->rolRepository->find($id);
+
+        if (! $rol) {
+            return null;
+        }
+
+        return $this->rolRepository->delete($id);
     }
 
-    public function activos()
+    public function getActivos()
     {
         return $this->rolRepository->findActivos();
     }
 
-    public function buscarPorNombre(string $nombre)
+    public function getByNombre(string $nombre)
     {
-        return $this->rolRepository->getByName($nombre);
+        $rol = $this->rolRepository->getByName($nombre);
+
+        if (! $rol) {
+            throw new InvalidArgumentException("No existe un rol con el nombre '{$nombre}'.");
+        }
+
+        return $rol;
     }
 
-    public function actualizarEstado(int $id, bool $estado)
+    public function cambiarEstado(int $id, bool $estado)
     {
         return $this->rolRepository->updateEstado($id, $estado);
     }

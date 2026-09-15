@@ -32,22 +32,14 @@ class RolController extends Controller
 
     public function store(StoreRolRequest $request): JsonResponse
     {
-        try {
-            $rol = $this->rolService->create($request->validated());
-        } catch (InvalidArgumentException $e) {
-            return response()->json(['message' => $e->getMessage()], 409);
-        }
+        $rol = $this->rolService->create($request->validated());
 
         return response()->json($rol, 201);
     }
 
     public function update(UpdateRolRequest $request, int $id): JsonResponse
     {
-        try {
-            $updated = $this->rolService->update($id, $request->validated());
-        } catch (InvalidArgumentException $e) {
-            return response()->json(['message' => $e->getMessage()], 409);
-        }
+        $updated = $this->rolService->update($id, $request->validated());
 
         if (! $updated) {
             return response()->json(['message' => 'Rol no encontrado'], 404);
@@ -74,7 +66,13 @@ class RolController extends Controller
 
     public function porNombre(string $nombre): JsonResponse
     {
-        return response()->json($this->rolService->getByNombre($nombre));
+        try {
+            $rol = $this->rolService->getByNombre($nombre);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
+
+        return response()->json($rol);
     }
 
     public function cambiarEstado(int $id): JsonResponse
