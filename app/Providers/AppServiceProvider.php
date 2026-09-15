@@ -8,6 +8,13 @@ use App\Interfaces\EmpleadoInterface;
 use App\Repositories\EmpleadoRepository;
 use App\Interfaces\ServicioInterface;
 use App\Repositories\ServicioRepository;
+use App\Interfaces\FacturaInterface;
+use App\Repositories\FacturaRepository;
+use App\Interfaces\PagoInterface;
+use App\Repositories\PagoRepository;
+use App\Interfaces\FacturaServicioInterface;
+use App\Repositories\FacturaServicioRepository;
+
 
 use Illuminate\Support\ServiceProvider;
 
@@ -32,6 +39,23 @@ class AppServiceProvider extends ServiceProvider
             ServicioInterface::class,
             ServicioRepository::class
         );
+
+        $this->app->bind(
+            FacturaInterface::class,
+            FacturaRepository::class
+        );
+
+        $this->app->bind(
+            PagoInterface::class,
+            PagoRepository::class
+        );
+
+        $this->app->bind(
+            FacturaServicioInterface::class,
+            FacturaServicioRepository::class
+        );
+
+
     }
 
     /**
