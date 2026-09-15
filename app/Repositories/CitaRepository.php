@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Cita;
-use App\Repositories\Interfaces\CitaInterface;
+use App\Interfaces\CitaInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class CitaRepository extends BaseRepository implements CitaInterface

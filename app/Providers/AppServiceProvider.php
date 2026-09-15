@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Repositories\CitaRepository;
-use App\Repositories\Interfaces\CitaInterface;
+use App\Interfaces\CitaInterface;
 use App\Interfaces\EmpleadoInterface;
 use App\Repositories\EmpleadoRepository;
 use App\Interfaces\ServicioInterface;

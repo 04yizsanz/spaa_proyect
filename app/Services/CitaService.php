@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\Interfaces\CitaInterface;
+use App\Interfaces\CitaInterface;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Cita;
 use InvalidArgumentException;
