@@ -6,7 +6,6 @@ use App\Http\Requests\Usuario\StoreUsuarioRequest;
 use App\Http\Requests\Usuario\UpdateUsuarioRequest;
 use App\Services\UsuarioService;
 use Illuminate\Http\JsonResponse;
-use InvalidArgumentException;
 
 class UsuarioController extends Controller
 {
@@ -32,22 +31,14 @@ class UsuarioController extends Controller
 
     public function store(StoreUsuarioRequest $request): JsonResponse
     {
-        try {
-            $usuario = $this->usuarioService->create($request->validated());
-        } catch (InvalidArgumentException $e) {
-            return response()->json(['message' => $e->getMessage()], 409);
-        }
+        $usuario = $this->usuarioService->create($request->validated());
 
         return response()->json($usuario, 201);
     }
 
     public function update(UpdateUsuarioRequest $request, int $id): JsonResponse
     {
-        try {
-            $updated = $this->usuarioService->update($id, $request->validated());
-        } catch (InvalidArgumentException $e) {
-            return response()->json(['message' => $e->getMessage()], 409);
-        }
+        $updated = $this->usuarioService->update($id, $request->validated());
 
         if (! $updated) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
@@ -72,14 +63,13 @@ class UsuarioController extends Controller
         return response()->json($this->usuarioService->getByRol($rolId));
     }
 
-    public function cambiarEstado(int $id): JsonResponse
+    public function porEstatus(bool $estado): JsonResponse
     {
-        $cambiado = $this->usuarioService->cambiarEstado($id, request()->input('estado'));
+        return response()->json($this->usuarioService->getByEstatus($estado));
+    }
 
-        if (! $cambiado) {
-            return response()->json(['message' => 'Usuario no encontrado'], 404);
-        }
-
-        return response()->json(['message' => 'Estado actualizado correctamente']);
+    public function porNombre(string $nombre): JsonResponse
+    {
+        return response()->json($this->usuarioService->getByNombre($nombre));
     }
 }
