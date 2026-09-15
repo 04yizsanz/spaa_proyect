@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Repositories\Interfaces;
+namespace App\Interfaces;
 
 use App\Models\Cita;
+use App\Interfaces\BaseInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 interface CitaInterface extends BaseInterface
