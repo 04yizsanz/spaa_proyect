@@ -12,40 +12,27 @@ class RolRepository extends BaseRepository implements RolInterface
         parent::__construct($model);
     }
 
-    /**
-     * Obtener todos los roles activos.
-     */
     public function findActivos()
     {
-        return $this->model
-            ->where('estado', true)
-            ->get();
+        return $this->model->where('estado', true)->get();
     }
 
-    /**
-     * Buscar un rol por nombre.
-     */
     public function getByName(string $nombre)
     {
-        return $this->model
-            ->where('nombre', $nombre)
-            ->first();
-    }
+        return $this->model->where('nombre', $nombre)->first();
+    }   
 
-    /**
-     * Cambiar el estado de un rol.
-     */
     public function updateEstado(int $id, bool $estado)
     {
-        $rol = $this->model->find($id);
+        $registro = $this->model->find($id);
 
-        if (!$rol) {
+        if (! $registro) {
             return null;
         }
 
-        $rol->estado = $estado;
-        $rol->save();
+        $registro->estado = $estado;
+        $registro->save();
 
-        return $rol->fresh();
+        return $registro->fresh();
     }
 }
