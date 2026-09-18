@@ -14,6 +14,12 @@ use App\Interfaces\PagoInterface;
 use App\Repositories\PagoRepository;
 use App\Interfaces\FacturaServicioInterface;
 use App\Repositories\FacturaServicioRepository;
+use App\Interfaces\RolInterface;
+use App\Repositories\RolRepository;
+use App\Interfaces\UsuarioInterface;
+use App\Repositories\UsuarioRepository;
+use App\Interfaces\ClienteInterface;
+use App\Repositories\ClienteRepository;
 
 
 use Illuminate\Support\ServiceProvider;
@@ -54,6 +60,24 @@ class AppServiceProvider extends ServiceProvider
             FacturaServicioInterface::class,
             FacturaServicioRepository::class
         );
+
+        $this->app->bind(
+            RolInterface::class,
+            RolRepository::class
+        );
+
+       $this->app->bind(
+            UsuarioInterface::class,
+            UsuarioRepository::class
+        );
+
+       $this->app->bind(
+            ClienteInterface::class,
+            ClienteRepository::class
+        );
+
+
+
 
 
     }

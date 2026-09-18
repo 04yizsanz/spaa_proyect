@@ -8,6 +8,10 @@ use App\Http\Controllers\CitaController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\FacturaServicioController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ClienteController;
+
 
 
 
@@ -28,3 +32,15 @@ Route::apiResource('pagos', PagoController::class);
 
 // Facturas de servicios
 Route::apiResource('factura-servicios', FacturaServicioController::class);
+
+// Rol
+Route::apiResource('roles', RolController::class);
+
+// Usuario
+Route::apiResource('usuarios', UsuarioController::class);
+
+// Cliente
+Route::apiResource('clientes', ClienteController::class);
+
+
+
