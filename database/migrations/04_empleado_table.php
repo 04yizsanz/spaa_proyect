@@ -34,18 +34,13 @@ return new class extends Migration
             $table->date('fecha_contratacion'); // Debe ser <= fecha actual (validar en Form Request)
 
             $table->boolean('disponibilidad')->default(true)->nullable();
-            // AMBIGUO: formato pendiente de confirmar. Se usó boolean simple
-            // (disponible / no disponible). Si se requiere indicar "cuándo"
-            // (días/horarios), reemplazar por $table->json('disponibilidad')->nullable()
-            // o mover esa lógica a una tabla relacionada tipo `horarios`.
-
+           
             $table->timestamps();
+            
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('empleados');
