@@ -26,7 +26,14 @@ class BaseRepository implements BaseInterface
 
     public function getById(int $id)
     {
-        return $this->model->find($id);
+        $registro = $this->model->find($id);
+
+          if(!$registro) {
+            return null;
+        }
+
+        return $registro;
+
     }
 
     public function update(array $data, int $id)

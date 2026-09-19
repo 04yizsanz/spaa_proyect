@@ -105,7 +105,7 @@ class DatabaseSeeder extends Seeder
                 'telefono' => '3001001004',
                 'password' => Hash::make('12345678'),
                 'estado' => true,
-                'created_at' => now6(),
+                'created_at' => now(),
                 'updated_at' => now(),
             ]);
 

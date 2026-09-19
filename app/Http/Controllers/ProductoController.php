@@ -27,10 +27,23 @@ class ProductoController extends Controller
     }
 
     public function show(int $id)
+
     {
+      
+
+        $dato = $this->productoService->show($id);
+
+        if (!$dato) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
+
         return response()->json([
             'success' => 'Producto encontrado',
-            'data' => $this->productoService->show($id)
+            'data' => $dato
         ], 200);
     }
 

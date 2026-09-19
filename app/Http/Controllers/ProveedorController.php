@@ -7,8 +7,10 @@ use App\Http\Requests\Proveedor\UpdateProveedorRequest;
 
 class ProveedorController extends Controller
 {
-    public function __construct(private ProveedorService $proveedorService) {}
-
+    public function __construct(private ProveedorService $proveedorService)
+    {
+    }
+//index, es para listar todos los registros 
     public function index()
     {
         return response()->json([
@@ -16,7 +18,7 @@ class ProveedorController extends Controller
             'data' => $this->proveedorService->list()
         ], 200);
     }
-
+//el store es para incertar o crear un nuevo registro 
     public function store(StoreProveedorRequest $datos)
     {
         $registroInsertado = $this->proveedorService->store($datos->validated());
@@ -25,15 +27,26 @@ class ProveedorController extends Controller
             'data' => $registroInsertado
         ], 201);
     }
-
+//es para trer un solo registro por medio del id 
     public function show(int $id)
     {
+
+        $dato = $this->proveedorService->show($id);
+
+        if (!$dato) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
+
         return response()->json([
             'success' => 'Proveedor encontrado',
-            'data' => $this->proveedorService->show($id)
+            'data' => $dato
         ], 200);
     }
-
+//el update sirve para eliminar un registro 
     public function update(UpdateProveedorRequest $datosActualizar, int $id)
     {
         $registroActualizado = $this->proveedorService->update($id, $datosActualizar->validated());
@@ -42,7 +55,7 @@ class ProveedorController extends Controller
             'data' => $registroActualizado
         ], 200);
     }
-
+//destroy sirve para eliminar un registro
     public function destroy(int $id)
     {
         $this->proveedorService->destroy($id);
