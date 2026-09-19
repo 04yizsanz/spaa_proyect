@@ -52,6 +52,6 @@ class BaseRepository implements BaseInterface
             return null;
         }
 
-        return $registro->delete($id); 
+        return $registro->delete(); 
     }
 }

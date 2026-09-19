@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Empleado;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Validation\Rule;
 class UpdateEmpleadoRequest extends FormRequest
 {
     public function authorize(): bool
@@ -16,7 +16,7 @@ class UpdateEmpleadoRequest extends FormRequest
         return [
             'nombre' => ['sometimes', 'string', 'max:50'],
             'apellido' => ['sometimes', 'string', 'max:50'],
-            'documento' => ['sometimes', 'string', 'max:20', 'unique:empleados,documento,' . $this->route('id')],
+            'documento' => ['sometimes', 'string', 'max:20', 'unique:empleados,documento,' . $this->route('id') . ',empleado_id'],
             'correo' => ['nullable', 'email', 'max:100'],
             'telefono' => ['nullable', 'string', 'max:20'],
             'rol' => ['sometimes', 'in:estilista,Estetisista,recepcionista,admin'],
