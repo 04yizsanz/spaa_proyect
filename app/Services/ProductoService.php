@@ -12,12 +12,12 @@ class ProductoService
 
     public function list()
     {
-        return $this->productoRepository->All();
+        return $this->productoRepository->getAll();
     }
 
     public function show(int $id)
     {
-        return $this->productoRepository->find($id);
+        return $this->productoRepository->getById($id);
     }
 
     public function store(array $data)

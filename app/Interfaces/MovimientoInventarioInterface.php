@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-interface Movimiento_InventarioInterface extends BaseInterface
+interface MovimientoInventarioInterface extends BaseInterface
 
 {
     public function getByFecha_Hora(string $fecha_hora);
