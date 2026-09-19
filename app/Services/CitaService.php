@@ -32,7 +32,7 @@ class CitaService
         return $this->citaRepository->create($data);
     }
 
-    public function update(int $id, array $data): bool
+    public function update(int $id, array $data)
     {
         if (isset($data['empleado_id'], $data['fecha'], $data['hora'])) {
             if ($this->existeConflictoHorario($data['empleado_id'], $data['fecha'], $data['hora'], $id)) {
@@ -40,7 +40,7 @@ class CitaService
             }
         }
 
-        return $this->citaRepository->update($id, $data);
+        return $this->citaRepository->update($data, $id);
     }
 
     public function delete(int $id): bool

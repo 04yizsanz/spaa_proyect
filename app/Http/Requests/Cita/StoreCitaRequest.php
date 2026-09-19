@@ -18,7 +18,7 @@ class StoreCitaRequest extends FormRequest
             'fecha' => ['required', 'date'],
             'hora' => ['required', 'date_format:H:i'],
             'estado' => ['nullable', 'in:pendiente,confirmada,completada,cancelada'],
-            'cliente_id' => ['required', 'integer', 'exists:clientes,id'],
+            'cliente_id' => ['required', 'integer', 'exists:clientes,cliente_id'],
             'empleado_id' => ['required', 'integer', 'exists:empleados,empleado_id'],
             'servicio_id' => ['required', 'integer', 'exists:servicios,servicio_id'],
         ];

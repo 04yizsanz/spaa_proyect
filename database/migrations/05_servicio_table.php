@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('activo')->default(true); // Servicio disponible o no
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

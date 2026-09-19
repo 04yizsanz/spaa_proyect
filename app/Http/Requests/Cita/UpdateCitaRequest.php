@@ -30,9 +30,9 @@ class UpdateCitaRequest extends FormRequest
             ],
 
             'cliente_id' => [
-                'sometimes',
-                'integer',
-                'exists:clientes,id',
+            'sometimes',
+            'integer',
+            'exists:clientes,cliente_id',
             ],
 
             'empleado_id' => [

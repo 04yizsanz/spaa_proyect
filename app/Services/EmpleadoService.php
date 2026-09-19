@@ -28,13 +28,15 @@ class EmpleadoService
     }
 
     public function update(int $id, array $data)
-{
+    {
     return $this->empleadoRepository->update($data, $id);
-}
+    }
 
     public function delete(int $id): bool
     {
-        return $this->empleadoRepository->delete($id);
+    $registro = $this->empleadoRepository->delete($id);
+
+    return $registro !== null;
     }
 
     public function getDisponibles(): Collection
