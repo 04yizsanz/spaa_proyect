@@ -27,10 +27,10 @@ class EmpleadoService
         return $this->empleadoRepository->create($data);
     }
 
-    public function update(int $id, array $data): bool
-    {
-        return $this->empleadoRepository->update($id, $data);
-    }
+    public function update(int $id, array $data)
+{
+    return $this->empleadoRepository->update($data, $id);
+}
 
     public function delete(int $id): bool
     {
