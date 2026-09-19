@@ -8,7 +8,8 @@ class Proveedor extends Model
 {
      use HasFactory; //Hasfactory se va a encargar de crear datos de prueba
     
-     protected $table="proveedores";
+     protected $table="proveedor";
+     protected $primaryKey = "proveedor_id";
      protected $fillable = [ 
         "nombre",
         "contacto",

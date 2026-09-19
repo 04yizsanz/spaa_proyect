@@ -12,12 +12,12 @@ class ProveedorService
 
     public function list()
     {
-        return $this->proveedorRepository->All();
+        return $this->proveedorRepository->getAll();
     }
 
     public function show(int $id)
     {
-        return $this->proveedorRepository->find($id);
+        return $this->proveedorRepository->getById($id);
     }
 
     public function store(array $data)

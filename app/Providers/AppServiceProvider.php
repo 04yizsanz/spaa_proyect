@@ -20,6 +20,12 @@ use App\Interfaces\UsuarioInterface;
 use App\Repositories\UsuarioRepository;
 use App\Interfaces\ClienteInterface;
 use App\Repositories\ClienteRepository;
+use App\Interfaces\ProveedorInterface;
+use App\Repositories\ProveedorRepository;
+use App\Interfaces\ProductoInterface;
+use App\Repositories\ProductoRepository;
+use App\Interfaces\MovimientoInventarioInterface;
+use App\Repositories\MovimientoInventarioRepository;
 
 
 use Illuminate\Support\ServiceProvider;
@@ -76,11 +82,31 @@ class AppServiceProvider extends ServiceProvider
             ClienteRepository::class
         );
 
+         
+    
+        $this->app->bind(
+            ProveedorInterface::class,
+            ProveedorRepository::class
+    
+        );
 
+        $this->app->bind(
+            ProductoInterface::class,
+            ProductoRepository::class
+    
+        );
 
-
+         $this->app->bind(
+            MovimientoInventarioInterface::class,
+            MovimientoInventarioRepository::class
+    
+        );
 
     }
+
+
+
+    
 
     /**
      * Bootstrap any application services.

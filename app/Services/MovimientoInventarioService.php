@@ -2,22 +2,22 @@
 
 namespace App\Services;
 
-use App\Interfaces\Movimiento_InventarioInterface;
+use App\Interfaces\MovimientoInventarioInterface;
 
 class MovimientoInventarioService
 {
     public function __construct(
-        private Movimiento_InventarioInterface $movimientoInventarioRepository
+        private MovimientoInventarioInterface $movimientoInventarioRepository
     ) {}
 
     public function list()
     {
-        return $this->movimientoInventarioRepository->All();
+        return $this->movimientoInventarioRepository->getAll();
     }
 
     public function show(int $id)
     {
-        return $this->movimientoInventarioRepository->find($id);
+        return $this->movimientoInventarioRepository->getById($id);
     }
 
     public function store(array $data)
