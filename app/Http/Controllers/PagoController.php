@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\PagoRepositoryInterface;
+
+use App\Repositories\PagoRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class PagoController extends Controller
 {
-    protected PagoRepositoryInterface $pagoRepository;
+    protected PagoRepository $pagoRepository;
 
-    public function __construct(PagoRepositoryInterface $pagoRepository)
+    public function __construct(PagoRepository $pagoRepository)
     {
         $this->pagoRepository = $pagoRepository;
     }
@@ -24,19 +25,20 @@ class PagoController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'codigo_factura'   => 'required|exists:facturas,codigo_factura',
+            'codigo_cita'      => 'required|integer|exists:citas,codigo_cita',
             'monto'            => 'required|numeric|min:0',
-            'metodo_pago'      => 'required|string',
-            'fecha_pago'       => 'required|date',
+            'metodo'           => 'required|string|in:efectivo,tarjeta,transferencia,pse',
+            'fecha_hora'       => 'required|date',
+            'estado'           => 'sometimes|string|in:pendiente,aprobado,rechazado',
         ]);
 
         $pago = $this->pagoRepository->create($validated);
         return response()->json($pago, 201);
     }
 
-    public function show(string $codigo_pago): JsonResponse
+    public function show(int $pago_id): JsonResponse
     {
-        $pago = $this->pagoRepository->find($codigo_pago);
+        $pago = $this->pagoRepository->find($pago_id);
 
         if (!$pago) {
             return response()->json(['message' => 'Pago no encontrado'], 404);
@@ -45,16 +47,17 @@ class PagoController extends Controller
         return response()->json($pago, 200);
     }
 
-    public function update(Request $request, string $codigo_pago): JsonResponse
+    public function update(Request $request, int $pago_id): JsonResponse
     {
         $validated = $request->validate([
-            'codigo_factura'   => 'sometimes|exists:facturas,codigo_factura',
+            'codigo_cita'      => 'sometimes|integer|exists:citas,codigo_cita',
             'monto'            => 'sometimes|numeric|min:0',
-            'metodo_pago'      => 'sometimes|string',
-            'fecha_pago'       => 'sometimes|date',
+            'metodo'           => 'sometimes|string|in:efectivo,tarjeta,transferencia,pse',
+            'fecha_hora'       => 'sometimes|date',
+            'estado'           => 'sometimes|string|in:pendiente,aprobado,rechazado',
         ]);
 
-        $pago = $this->pagoRepository->update($codigo_pago, $validated);
+        $pago = $this->pagoRepository->update($validated, $pago_id);
 
         if (!$pago) {
             return response()->json(['message' => 'Pago no encontrado'], 404);
@@ -63,9 +66,9 @@ class PagoController extends Controller
         return response()->json($pago, 200);
     }
 
-    public function destroy(string $codigo_pago): JsonResponse
+    public function destroy(int $pago_id): JsonResponse
     {
-        $deleted = $this->pagoRepository->delete($codigo_pago);
+        $deleted = $this->pagoRepository->delete($pago_id);
 
         if (!$deleted) {
             return response()->json(['message' => 'Pago no encontrado'], 404);

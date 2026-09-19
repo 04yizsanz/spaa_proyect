@@ -12,7 +12,6 @@ class FacturaServicioRepository extends BaseRepository implements FacturaServici
         parent::__construct($model);
     }
 
-    // $id esperado como ['factura_id' => x, 'servicio_id' => y] por la PK compuesta
     public function getById(mixed $id)
     {
         return $this->model
@@ -21,7 +20,7 @@ class FacturaServicioRepository extends BaseRepository implements FacturaServici
             ->first();
     }
 
-        public function update(array $data, mixed $id)
+    public function update(array $data, mixed $id)
     {
         $registro = $this->getById($id);
 
@@ -37,7 +36,7 @@ class FacturaServicioRepository extends BaseRepository implements FacturaServici
         return $this->getById($id);
     }
 
-        public function delete(mixed $id)
+    public function delete(mixed $id)
     {
         $registro = $this->getById($id);
 

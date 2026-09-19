@@ -24,9 +24,19 @@ class BaseRepository implements BaseInterface
         return $this->model->all();
     }
 
+    public function all()
+    {
+        return $this->getAll();
+    }
+
     public function getById(int $id)
     {
         return $this->model->find($id);
+    }
+
+    public function find(int $id)
+    {
+        return $this->getById($id);
     }
 
     public function update(array $data, int $id)

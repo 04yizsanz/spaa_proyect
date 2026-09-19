@@ -9,12 +9,10 @@ class FacturaServicio extends Model
 {
     use HasFactory;
 
-    protected $table = "facturaServicio";
+    protected $table = 'factura_servicio';
 
     public $incrementing = false;
     protected $primaryKey = null;
-    public $timestamps = false;
-
     protected $fillable = [
         'factura_id',
         'servicio_id',
@@ -27,8 +25,13 @@ class FacturaServicio extends Model
         'precio_unitario' => 'decimal:2',
     ];
 
-    public function facturaServicio()
+    public function factura()
     {
-        return $this->belongsTo(FacturaServicio::class, 'facturaServicio_id', 'factura_id');
+        return $this->belongsTo(Factura::class, 'factura_id', 'factura_id');
+    }
+
+    public function servicio()
+    {
+        return $this->belongsTo(Servicio::class, 'servicio_id', 'servicio_id');
     }
 }

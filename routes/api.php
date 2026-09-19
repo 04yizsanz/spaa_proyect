@@ -34,8 +34,13 @@ Route::apiResource('facturas', FacturaController::class);
 // Pagos
 Route::apiResource('pagos', PagoController::class);
 
-// Facturas de servicios
-Route::apiResource('factura-servicios', FacturaServicioController::class);
+// Facturas de servicios (PK compuesta: factura_id + servicio_id)
+Route::get('factura-servicios', [FacturaServicioController::class, 'index']);
+Route::post('factura-servicios', [FacturaServicioController::class, 'store']);
+Route::get('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'show']);
+Route::put('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'update']);
+Route::patch('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'update']);
+Route::delete('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'destroy']);
 
 // Rol
 Route::apiResource('roles', RolController::class);
