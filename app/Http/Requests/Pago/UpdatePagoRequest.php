@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Pago;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -14,10 +14,11 @@ class UpdatePagoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'codigo_factura' => 'sometimes|exists:facturas,codigo_factura',
+            'codigo_cita'    => 'sometimes|integer|exists:citas,codigo_cita',
             'monto'          => 'sometimes|numeric|min:0',
-            'metodo_pago'    => 'sometimes|string|in:efectivo,tarjeta,transferencia',
-            'fecha_pago'     => 'sometimes|date',
+            'metodo'         => 'sometimes|string|in:efectivo,tarjeta,transferencia,pse',
+            'fecha_hora'     => 'sometimes|date',
+            'estado'         => 'sometimes|string|in:pendiente,aprobado,rechazado',
         ];
     }
 }

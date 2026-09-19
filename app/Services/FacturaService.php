@@ -27,7 +27,7 @@ class FacturaService
 
     public function update(int $id, array $data)
     {
-        return $this->facturaRepository->update($id, $data);
+        return $this->facturaRepository->update($data, $id);
     }
 
     public function destroy(int $id)

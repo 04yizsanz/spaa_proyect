@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\FacturaServicioRepositoryInterface;
+use App\Interfaces\FacturaServicioInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class FacturaServicioController extends Controller
 {
-    protected FacturaServicioRepositoryInterface $facturaServicioRepository;
+    protected FacturaServicioInterface $facturaServicioRepository;
 
-    public function __construct(FacturaServicioRepositoryInterface $facturaServicioRepository)
+    public function __construct(FacturaServicioInterface $facturaServicioRepository)
     {
         $this->facturaServicioRepository = $facturaServicioRepository;
     }
@@ -24,9 +24,9 @@ class FacturaServicioController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'codigo_factura'  => 'required|exists:facturas,codigo_factura',
-            'servicio_id'     => 'required|integer|exists:servicios,servicio_id',
-            'cantidad'        => 'required|integer|min:1',
+            'factura_id' => 'required|integer|exists:facturas,factura_id',
+            'servicio_id' => 'required|integer|exists:servicios,servicio_id',
+            'cantidad' => 'required|integer|min:1',
             'precio_unitario' => 'required|numeric|min:0',
         ]);
 
@@ -34,9 +34,12 @@ class FacturaServicioController extends Controller
         return response()->json($registro, 201);
     }
 
-    public function show(string $codigo_factura_servicio): JsonResponse
+    public function show(int $factura_id, int $servicio_id): JsonResponse
     {
-        $registro = $this->facturaServicioRepository->find($codigo_factura_servicio);
+        $registro = $this->facturaServicioRepository->getById([
+            'factura_id' => $factura_id,
+            'servicio_id' => $servicio_id,
+        ]);
 
         if (!$registro) {
             return response()->json(['message' => 'Registro no encontrado'], 404);
@@ -45,14 +48,17 @@ class FacturaServicioController extends Controller
         return response()->json($registro, 200);
     }
 
-    public function update(Request $request, string $codigo_factura_servicio): JsonResponse
+    public function update(Request $request, int $factura_id, int $servicio_id): JsonResponse
     {
         $validated = $request->validate([
             'cantidad'        => 'sometimes|integer|min:1',
             'precio_unitario' => 'sometimes|numeric|min:0',
         ]);
 
-        $registro = $this->facturaServicioRepository->update($codigo_factura_servicio, $validated);
+        $registro = $this->facturaServicioRepository->update($validated, [
+            'factura_id' => $factura_id,
+            'servicio_id' => $servicio_id,
+        ]);
 
         if (!$registro) {
             return response()->json(['message' => 'Registro no encontrado'], 404);
@@ -61,9 +67,12 @@ class FacturaServicioController extends Controller
         return response()->json($registro, 200);
     }
 
-    public function destroy(string $codigo_factura_servicio): JsonResponse
+    public function destroy(int $factura_id, int $servicio_id): JsonResponse
     {
-        $deleted = $this->facturaServicioRepository->delete($codigo_factura_servicio);
+        $deleted = $this->facturaServicioRepository->delete([
+            'factura_id' => $factura_id,
+            'servicio_id' => $servicio_id,
+        ]);
 
         if (!$deleted) {
             return response()->json(['message' => 'Registro no encontrado'], 404);

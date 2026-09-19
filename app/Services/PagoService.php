@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\PagoInterface;
-use Carbon\Carbon;
+use DateTime;
 
 class PagoService
 {
@@ -16,9 +16,9 @@ class PagoService
         return $this->pagoRepository->all();
     }
 
-    public function show(int $id)
+    public function show(int $pagoId)
     {
-        return $this->pagoRepository->find($id);
+        return $this->pagoRepository->find($pagoId);
     }
 
     public function store(array $data)
@@ -26,14 +26,14 @@ class PagoService
         return $this->pagoRepository->create($data);
     }
 
-    public function update(int $id, array $data)
+    public function update(int $pagoId, array $data)
     {
-        return $this->pagoRepository->update($id, $data);
+        return $this->pagoRepository->update($data, $pagoId);
     }
 
-    public function destroy(int $id)
+    public function destroy(int $pagoId)
     {
-        return $this->pagoRepository->delete($id);
+        return $this->pagoRepository->delete($pagoId);
     }
 
     public function getByCita(int $codigo_cita)
@@ -46,8 +46,8 @@ class PagoService
         return $this->pagoRepository->getByEstado($estado);
     }
 
-    public function getByFecha(Carbon $fechaPago)
+    public function getByFechaHora(DateTime $fechaHora)
     {
-        return $this->pagoRepository->getByFecha($fechaPago);
+        return $this->pagoRepository->getByFechaHora($fechaHora);
     }
 }

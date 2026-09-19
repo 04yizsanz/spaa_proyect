@@ -13,20 +13,28 @@ class Factura extends Model
     protected $primaryKey = "factura_id";
 
     protected $fillable = [
-        'monto',
-        'metodo',
         'fecha_hora',
-        'estado',
-        'codigo_cita',
+        'subtotal',
+        'impuestos',
+        'total',
+        'pdf_url',
+        'cliente_id',
     ];
 
     protected $casts = [
         'fecha_hora' => 'datetime',
-        'monto' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'impuestos' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
-    public function cita()
+    public function cliente()
     {
-        return $this->belongsTo(Cita::class, 'codigo_cita', 'codigo_cita');
+        return $this->belongsTo(Cliente::class, 'cliente_id', 'cliente_id');
+    }
+
+    public function servicios()
+    {
+        return $this->hasMany(FacturaServicio::class, 'factura_id', 'factura_id');
     }
 }
