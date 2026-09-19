@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('fecha_hora');
            $table->string('motivo',100)->nullable();
             $table->timestamps();
+             $table->softDeletes(); 
 
                       $table->foreignId('producto_id')
                 ->constrained('producto', 'producto_id') 

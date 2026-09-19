@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string("email",100)->nullable();
             $table->string("registro_tributario",20)->unique();
             $table->timestamps();
+            $table->softDeletes(); 
 
         });
     }

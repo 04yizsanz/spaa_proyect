@@ -28,11 +28,22 @@ class MovimientoInventarioController extends Controller
 
     public function show(int $id)
     {
+        $dato = $this->movimientoInventarioService->show($id);
+
+        if (!$dato) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
+
         return response()->json([
-            'success' => 'Movimiento encontrado',
-            'data' => $this->movimientoInventarioService->show($id)
+            'success' => 'MovimientoInventario encontrado',
+            'data' => $dato
         ], 200);
-    }
+    }	
+    
 
     public function update(UpdateMovimientoInventarioRequest $datosActualizar, int $id)
     {
