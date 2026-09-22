@@ -27,7 +27,7 @@ class ServicioService
         return $this->servicioRepository->create($data);
     }
 
-    public function update(int $id, array $data): bool
+    public function update(int $id, array $data)
     {
         return $this->servicioRepository->update($data,$id);
     }
