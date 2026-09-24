@@ -36,15 +36,15 @@ class ClienteController extends Controller
         return response()->json($cliente, 201);
     }
 
-    public function update(UpdateClienteRequest $request, int $id): JsonResponse
+    public function update(UpdateClienteRequest $request, int $cliente): JsonResponse
     {
-        $updated = $this->clienteService->update($id, $request->validated());
+    $updated = $this->clienteService->update($cliente, $request->validated());
 
-        if (! $updated) {
-            return response()->json(['message' => 'Cliente no encontrado'], 404);
-        }
+    if (! $updated) {
+        return response()->json(['message' => 'Cliente no encontrado'], 404);
+    }
 
-        return response()->json(['message' => 'Cliente actualizado correctamente']);
+    return response()->json(['message' => 'Cliente actualizado correctamente']);
     }
 
     public function destroy(int $id): JsonResponse

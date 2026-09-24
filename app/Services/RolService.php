@@ -26,15 +26,15 @@ class RolService
         return $this->rolRepository->create($data);
     }
 
-    public function update(int $id, array $data)
+   public function update(int $id, array $data)
     {
-        $rol = $this->rolRepository->find($id);
+    $rol = $this->rolRepository->getById($id);
 
-        if (! $rol) {
-            return null;
-        }
+    if (! $rol) {
+        return null;
+    }
 
-        return $this->rolRepository->update($id, $data);
+    return $this->rolRepository->update($data, $id);
     }
 
     public function delete(int $id)

@@ -26,15 +26,15 @@ class ClienteService
     }
 
     public function update(int $id, array $data)
-    {
-        $cliente = $this->clienteRepository->find($id);
+{
+    $cliente = $this->clienteRepository->getById($id);
 
-        if (! $cliente) {
-            return null;
-        }
-
-        return $this->clienteRepository->update($id, $data);
+    if (! $cliente) {
+        return null;
     }
+
+    return $this->clienteRepository->update($data, $id);
+}
 
     public function delete(int $id)
     {

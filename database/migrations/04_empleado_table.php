@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('empleados', function (Blueprint $table) {
             $table->id('empleado_id'); // BIGINT UNSIGNED, PK, autoincremental
 
-            $table->string('nombre', 50);
+            $table->string('nombre', 50); 
             $table->string('apellido', 50);
 
             $table->string('documento', 20)->unique(); // Documento de identidad, único
@@ -28,7 +28,7 @@ return new class extends Migration
                 'Estetisista',
                 'recepcionista',
                 'admin',
-            ]); // AMBIGUO: catálogo de roles pendiente de confirmar con negocio
+            ]); // guarda valores especificos 
 
             $table->decimal('salario', 10, 2); // Debe ser > 0 (validar en Form Request)
 
@@ -36,7 +36,7 @@ return new class extends Migration
 
             $table->boolean('disponibilidad')->default(true)->nullable();
            
-            $table->timestamps();
+            $table->timestamps(); 
             $table->softDeletes();
             
         });
