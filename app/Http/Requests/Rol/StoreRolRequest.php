@@ -1,24 +1,22 @@
 <?php
 
-namespace App\Services\Rol;
+namespace App\Http\Requests\Rol;
 
-use App\Interfaces\RolInterface;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRolService
+class StoreRolRequest extends FormRequest
 {
-    protected RolInterface $rolRepository;
-
-    public function __construct(RolInterface $rolRepository)
+    public function authorize(): bool
     {
-        $this->rolRepository = $rolRepository;
+        return true;
     }
 
-    public function execute(array $data)
+    public function rules(): array
     {
-        return $this->rolRepository->create([
-            'nombre' => $data['nombre'],
-            'descripcion' => $data['descripcion'] ?? null,
-            'estado' => $data['estado'],
-        ]);
+        return [
+            'nombre' => ['required', 'string', 'max:100'],
+            'descripcion' => ['nullable', 'string'],
+            'estado' => ['required', 'boolean'],
+        ];
     }
 }

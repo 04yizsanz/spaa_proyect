@@ -14,12 +14,15 @@ class UpdateClienteRequest extends FormRequest
 
     public function rules(): array
     {
-        $clienteId = $this->route('cliente'); // ajusta si el parámetro de ruta se llama distinto
+        $clienteId = $this->route('cliente');
 
         return [
             'usuario_id' => [
-                'required', 'integer', 'exists:usuarios,usuario_id',
-                Rule::unique('clientes', 'usuario_id')->ignore($clienteId, 'cliente_id'),
+                'required',
+                'integer',
+                'exists:usuarios,usuario_id',
+                Rule::unique('clientes', 'usuario_id')
+                    ->ignore($clienteId, 'cliente_id'),
             ],
             'fecha_nacimiento' => ['nullable', 'date', 'before:today'],
             'preferencias' => ['nullable', 'string'],

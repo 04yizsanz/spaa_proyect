@@ -12,12 +12,12 @@ class UsuarioService
 
     public function getAll()
     {
-        return $this->usuarioRepository->all();
+        return $this->usuarioRepository->getAll();
     }
 
     public function getById(int $id)
     {
-        return $this->usuarioRepository->find($id);
+        return $this->usuarioRepository->getById($id);
     }
 
     public function create(array $data)
@@ -27,18 +27,18 @@ class UsuarioService
 
     public function update(int $id, array $data)
     {
-        $usuario = $this->usuarioRepository->find($id);
+        $usuario = $this->usuarioRepository->getById($id);
 
         if (! $usuario) {
             return null;
         }
 
-        return $this->usuarioRepository->update($id, $data);
+        return $this->usuarioRepository->update($data, $id);
     }
 
     public function delete(int $id)
     {
-        $usuario = $this->usuarioRepository->find($id);
+        $usuario = $this->usuarioRepository->getById($id);
 
         if (! $usuario) {
             return null;

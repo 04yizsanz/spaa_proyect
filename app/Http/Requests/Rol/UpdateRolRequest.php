@@ -14,26 +14,32 @@ class UpdateRolRequest extends FormRequest
 
     public function rules(): array
     {
-        $rolId = $this->route('rol'); // ajusta si el parámetro de tu ruta se llama distinto
+        $rolId = $this->route('rol');
 
         return [
             'nombre' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:100',
                 Rule::unique('roles', 'nombre')->ignore($rolId),
             ],
-            'descripcion' => ['nullable', 'string', 'max:255'],
-            'estado' => ['required', 'boolean'],
+            'descripcion' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:255'
+            ],
+            'estado' => [
+                'sometimes',
+                'boolean'
+            ],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'nombre.required' => 'El nombre del rol es obligatorio.',
             'nombre.unique' => 'Ya existe un rol con ese nombre.',
-            'estado.required' => 'El estado es obligatorio.',
             'estado.boolean' => 'El estado debe ser verdadero o falso.',
         ];
     }
