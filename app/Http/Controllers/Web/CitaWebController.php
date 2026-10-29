@@ -7,23 +7,20 @@ use App\Models\Cita;
 use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Servicio;
-use App\Models\Usuario;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 /**
  * Controlador de vistas Blade para el módulo de Citas.
  *
- * Este controlador es DIFERENTE al CitaController existente,
- * que devuelve JSON para la API. Este renderiza vistas Blade.
- *
- * Gestiona: listado, formulario de creación y formulario de edición.
+ * Es DIFERENTE al CitaController de la API, que devuelve JSON.
+ * Un usuario con rol Cliente solo ve y gestiona sus propias citas.
  */
 class CitaWebController extends Controller
 {
     /**
-     * Listado de citas con filtros opcionales por fecha y estado.
+     * Citas: listado con filtros opcionales por fecha y estado.
      * GET /citas
      */
     public function index(Request $request)
@@ -36,22 +33,25 @@ class CitaWebController extends Controller
                 ->orderBy('fecha', 'desc')
                 ->orderBy('hora', 'asc');
 
-            // Aplicar filtro de fecha si se proporcionó
+            // Un Cliente solo ve sus propias citas
+            $usuario = Auth::user();
+            if ($usuario->esCliente()) {
+                $query->where('cliente_id', $usuario->cliente?->cliente_id ?? 0);
+            }
+
             if ($filtroFecha) {
                 $query->whereDate('fecha', $filtroFecha);
             }
 
-            // Aplicar filtro de estado si se proporcionó y es válido
             $estadosValidos = ['pendiente', 'confirmada', 'completada', 'cancelada'];
             if ($filtroEstado && in_array($filtroEstado, $estadosValidos)) {
                 $query->where('estado', $filtroEstado);
             }
 
-            $citas   = $query->paginate(15)->withQueryString();
+            $citas    = $query->paginate(15)->withQueryString();
             $modoDemo = false;
 
         } catch (Throwable $e) {
-            // Si la base de datos no está lista, modo demostración
             $citas    = collect([]);
             $modoDemo = true;
         }
@@ -70,9 +70,26 @@ class CitaWebController extends Controller
      */
     public function create()
     {
+        $usuario = Auth::user();
+
         try {
-            // Cargamos clientes con su información de usuario para mostrar nombre y apellido
-            $clientes  = Cliente::with('usuario')->get();
+            if ($usuario->esCliente()) {
+                $cliente = $usuario->cliente;
+
+                if (! $cliente) {
+                    return redirect()
+                        ->route('citas.index')
+                        ->with('error', 'Tu cuenta no tiene un perfil de cliente asociado.');
+                }
+
+                // El Cliente solo puede agendar a su propio nombre
+                $clientes = Cliente::with('usuario')
+                    ->where('cliente_id', $cliente->cliente_id)
+                    ->get();
+            } else {
+                $clientes = Cliente::with('usuario')->get();
+            }
+
             $empleados = Empleado::where('disponibilidad', true)->orderBy('nombre')->get();
             $servicios = Servicio::where('activo', true)->orderBy('nombre')->get();
             $modoDemo  = false;
@@ -92,6 +109,21 @@ class CitaWebController extends Controller
      */
     public function store(Request $request)
     {
+        $usuario = Auth::user();
+
+        // Un Cliente siempre agenda a su propio nombre, aunque manipulen el formulario
+        if ($usuario->esCliente()) {
+            $cliente = $usuario->cliente;
+
+            if (! $cliente) {
+                return redirect()
+                    ->route('citas.index')
+                    ->with('error', 'Tu cuenta no tiene un perfil de cliente asociado.');
+            }
+
+            $request->merge(['cliente_id' => $cliente->cliente_id]);
+        }
+
         $validated = $request->validate([
             'codigo_cita' => ['required', 'integer', 'unique:citas,codigo_cita'],
             'fecha'       => ['required', 'date'],
@@ -114,7 +146,6 @@ class CitaWebController extends Controller
             'servicio_id.exists'   => 'El servicio seleccionado no existe.',
         ]);
 
-        // Estado predeterminado si no se envía
         $validated['estado'] = $validated['estado'] ?? 'pendiente';
 
         Cita::create($validated);
@@ -131,9 +162,16 @@ class CitaWebController extends Controller
     public function edit(int $id)
     {
         try {
-            // Buscamos por clave primaria real del modelo
-            $cita      = Cita::findOrFail($id);
-            $clientes  = Cliente::with('usuario')->get();
+            $cita = $this->citaVisible($id);
+
+            if (Auth::user()->esCliente()) {
+                $clientes = Cliente::with('usuario')
+                    ->where('cliente_id', $cita->cliente_id)
+                    ->get();
+            } else {
+                $clientes = Cliente::with('usuario')->get();
+            }
+
             $empleados = Empleado::orderBy('nombre')->get();
             $servicios = Servicio::where('activo', true)->orderBy('nombre')->get();
             $modoDemo  = false;
@@ -152,13 +190,17 @@ class CitaWebController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        $cita = Cita::findOrFail($id);
+        $cita = $this->citaVisible($id);
+
+        // Un Cliente no puede pasar su cita a otro cliente
+        if (Auth::user()->esCliente()) {
+            $request->merge(['cliente_id' => $cita->cliente_id]);
+        }
 
         $validated = $request->validate([
             'codigo_cita' => [
                 'required',
                 'integer',
-                // Ignoramos la cita actual en la validación unique
                 'unique:citas,codigo_cita,' . $id . ',citas_id',
             ],
             'fecha'       => ['required', 'date'],
@@ -185,5 +227,20 @@ class CitaWebController extends Controller
         return redirect()
             ->route('citas.index')
             ->with('success', 'La cita se ha actualizado correctamente.');
+    }
+
+    /**
+     * Busca una cita por id. Si el usuario es Cliente, solo encuentra las suyas.
+     */
+    private function citaVisible(int $id): Cita
+    {
+        $query   = Cita::query();
+        $usuario = Auth::user();
+
+        if ($usuario->esCliente()) {
+            $query->where('cliente_id', $usuario->cliente?->cliente_id ?? 0);
+        }
+
+        return $query->findOrFail($id);
     }
 }

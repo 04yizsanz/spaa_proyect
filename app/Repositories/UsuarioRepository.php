@@ -25,6 +25,22 @@ class UsuarioRepository extends BaseRepository implements UsuarioInterface
         return $this->model->create($data);
     }
 
+    /**
+     * Actualiza un usuario. Si viene password, la cifra; si viene vacía, la conserva.
+     */
+    public function update(array $data, int $id)
+    {
+        if (array_key_exists('password', $data)) {
+            if (filled($data['password'])) {
+                $data['password'] = Hash::make($data['password']);
+            } else {
+                unset($data['password']);
+            }
+        }
+
+        return parent::update($data, $id);
+    }
+
     public function getByRol(int $idRol)
     {
         return $this->model->where('rol_id', $idRol)->get();

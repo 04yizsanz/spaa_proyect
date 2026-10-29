@@ -66,6 +66,14 @@
                             ['route' => 'servicios.index','label' => 'Servicios'],
                             ['route' => 'empleados.index','label' => 'Empleados'],
                         ];
+
+                        // Un usuario con rol Cliente solo ve Inicio y Citas
+                        if (Auth::check() && Auth::user()->esCliente()) {
+                            $navItems = array_values(array_filter(
+                                $navItems,
+                                fn ($item) => in_array($item['route'], ['home', 'citas.index'])
+                            ));
+                        }
                     @endphp
 
                     @foreach ($navItems as $item)

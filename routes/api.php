@@ -15,64 +15,61 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\MovimientoInventarioController;
 
+Route::name('api.')->group(function () {
 
+    // Empleados
+    Route::apiResource('empleados', EmpleadoController::class);
 
+    // Servicios
+    Route::apiResource('servicios', ServicioController::class);
 
+    // Citas
+    Route::apiResource('citas', CitaController::class);
 
-// Empleados
-Route::apiResource('empleados', EmpleadoController::class);
+    // Facturas
+    Route::apiResource('facturas', FacturaController::class);
 
-// Servicios
-Route::apiResource('servicios', ServicioController::class);
+    // Pagos
+    Route::apiResource('pagos', PagoController::class);
 
-// Citas
-Route::apiResource('citas', CitaController::class);
+    // Facturas de servicios (PK compuesta: factura_id + servicio_id)
+    Route::get('factura-servicios', [FacturaServicioController::class, 'index']);
+    Route::post('factura-servicios', [FacturaServicioController::class, 'store']);
+    Route::get('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'show']);
+    Route::put('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'update']);
+    Route::patch('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'update']);
+    Route::delete('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'destroy']);
 
-// Facturas
-Route::apiResource('facturas', FacturaController::class);
+    // Rol
+    Route::apiResource('roles', RolController::class);
 
-// Pagos
-Route::apiResource('pagos', PagoController::class);
+    // Usuario
+    Route::apiResource('usuarios', UsuarioController::class);
 
-// Facturas de servicios (PK compuesta: factura_id + servicio_id)
-Route::get('factura-servicios', [FacturaServicioController::class, 'index']);
-Route::post('factura-servicios', [FacturaServicioController::class, 'store']);
-Route::get('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'show']);
-Route::put('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'update']);
-Route::patch('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'update']);
-Route::delete('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'destroy']);
+    // Cliente
+    Route::apiResource('clientes', ClienteController::class);
 
-// Rol
-Route::apiResource('roles', RolController::class);
+    // Proveedor - rutas personalizadas (antes del apiResource)
+    Route::get('proveedores/contacto/{contacto}', [ProveedorController::class, 'getByContacto']);
+    Route::get('proveedores/email/{email}', [ProveedorController::class, 'getByEmail']);
+    Route::get('proveedores/registro-tributario/{registro_tributario}', [ProveedorController::class, 'getByRegistroTributario']);
 
-// Usuario
-Route::apiResource('usuarios', UsuarioController::class);
+    // Proveedor - CRUD estándar
+    Route::apiResource('proveedores', ProveedorController::class);
 
-// Cliente
-Route::apiResource('clientes', ClienteController::class);
+    // Producto - rutas personalizadas (antes del apiResource)
+    Route::get('producto/nombre/{nombre}', [ProductoController::class, 'getByNombre']);
+    Route::get('producto/fecha-registro/{fecha_registro}', [ProductoController::class, 'getByFechaRegistro']);
+    Route::get('producto/proveedor/{proveedor_id}', [ProductoController::class, 'getByProveedor']);
 
-// Proveedor - rutas personalizadas (antes del apiResource)
-Route::get('proveedores/contacto/{contacto}', [ProveedorController::class, 'getByContacto']);
-Route::get('proveedores/email/{email}', [ProveedorController::class, 'getByEmail']);
-Route::get('proveedores/registro-tributario/{registro_tributario}', [ProveedorController::class, 'getByRegistroTributario']);
+    // Producto - CRUD estándar
+    Route::apiResource('producto', ProductoController::class);
 
-// Proveedor - CRUD estándar
-Route::apiResource('proveedores', ProveedorController::class);
+    // MovimientoInventario - rutas personalizadas (antes del apiResource)
+    Route::get('movimientoinventario/fecha-hora/{fecha_hora}', [MovimientoInventarioController::class, 'getByFechaHora']);
+    Route::get('movimientoinventario/producto/{producto_id}', [MovimientoInventarioController::class, 'getByProducto']);
 
-// Producto - rutas personalizadas (antes del apiResource)
-Route::get('producto/nombre/{nombre}', [ProductoController::class, 'getByNombre']);
-Route::get('producto/fecha-registro/{fecha_registro}', [ProductoController::class, 'getByFechaRegistro']);
-Route::get('producto/proveedor/{proveedor_id}', [ProductoController::class, 'getByProveedor']);
+    // MovimientoInventario - CRUD estándar
+    Route::apiResource('movimientoinventario', MovimientoInventarioController::class);
 
-// Producto - CRUD estándar
-Route::apiResource('producto', ProductoController::class);
-
-// MovimientoInventario - rutas personalizadas (antes del apiResource)
-Route::get('movimientoinventario/fecha-hora/{fecha_hora}', [MovimientoInventarioController::class, 'getByFechaHora']);
-Route::get('movimientoinventario/producto/{producto_id}', [MovimientoInventarioController::class, 'getByProducto']);
-
-// MovimientoInventario - CRUD estándar
-Route::apiResource('movimientoinventario', MovimientoInventarioController::class);
-
-
-
+});

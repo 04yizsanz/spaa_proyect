@@ -49,6 +49,16 @@ class Usuario extends Authenticatable
         return $this->belongsTo(Rol::class, 'rol_id', 'rol_id');
     }
 
+    public function cliente()
+    {
+        return $this->hasOne(Cliente::class, 'usuario_id', 'usuario_id');
+    }
+
+    public function esCliente(): bool
+    {
+        return $this->rol?->nombre === 'Cliente';
+    }
+
     public function empleado()
     {
         return $this->hasOne(Empleado::class, 'usuario_id', 'usuario_id');

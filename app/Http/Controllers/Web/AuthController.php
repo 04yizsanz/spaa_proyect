@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\Rol;
 use App\Services\UsuarioService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -69,11 +71,7 @@ class AuthController extends Controller
             return redirect()->route('home');
         }
 
-        $roles = Rol::where('estado', true)
-            ->orderBy('nombre')
-            ->pluck('nombre', 'rol_id');
-
-        return view('auth.register', compact('roles'));
+        return view('auth.register');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -87,7 +85,6 @@ class AuthController extends Controller
             'documento' => ['required', 'string', 'max:20', 'unique:usuarios,documento'],
             'email'     => ['required', 'email', 'max:150', 'unique:usuarios,email'],
             'telefono'  => ['nullable', 'string', 'max:20'],
-            'rol_id'    => ['required', 'integer', 'exists:roles,rol_id'],
             'password'  => ['required', 'string', 'min:8', 'confirmed'],
         ], [
             'nombre.required'    => 'El nombre es obligatorio.',
@@ -97,25 +94,37 @@ class AuthController extends Controller
             'email.required'     => 'El correo electrónico es obligatorio.',
             'email.email'        => 'Ingresa un correo electrónico válido.',
             'email.unique'       => 'Este correo ya está registrado.',
-            'rol_id.required'    => 'Selecciona un rol.',
-            'rol_id.exists'      => 'El rol seleccionado no es válido.',
             'password.required'  => 'La contraseña es obligatoria.',
             'password.min'       => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
         try {
-            // El UsuarioRepository hashea el password automáticamente
-            $usuario = $this->usuarioService->create([
-                'rol_id'    => (int) $data['rol_id'],
-                'nombre'    => $data['nombre'],
-                'apellido'  => $data['apellido'],
-                'documento' => $data['documento'],
-                'email'     => $data['email'],
-                'telefono'  => $data['telefono'] ?? null,
-                'password'  => $data['password'],   // el repository lo hashea
-                'estado'    => true,
-            ]);
+            // El registro público SIEMPRE crea una cuenta de cliente.
+            // Los demás roles los asigna un administrador, nunca el visitante.
+            $usuario = DB::transaction(function () use ($data) {
+                $rol = Rol::firstOrCreate(
+                    ['nombre' => 'Cliente'],
+                    ['descripcion' => 'Cliente registrado que puede gestionar sus citas.', 'estado' => true]
+                );
+
+                // El UsuarioRepository cifra el password automáticamente
+                $usuario = $this->usuarioService->create([
+                    'rol_id'    => $rol->rol_id,
+                    'nombre'    => $data['nombre'],
+                    'apellido'  => $data['apellido'],
+                    'documento' => $data['documento'],
+                    'email'     => $data['email'],
+                    'telefono'  => $data['telefono'] ?? null,
+                    'password'  => $data['password'],
+                    'estado'    => true,
+                ]);
+
+                // Ficha de cliente ligada al usuario
+                Cliente::create(['usuario_id' => $usuario->usuario_id]);
+
+                return $usuario;
+            });
 
             Log::info("Registro exitoso: {$usuario->email} (ID: {$usuario->usuario_id})");
 

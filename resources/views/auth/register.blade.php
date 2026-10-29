@@ -92,16 +92,6 @@
                         help="Opcional."
                     />
 
-                    {{-- Rol --}}
-                    <x-form-field
-                        name="rol_id"
-                        label="Rol"
-                        type="select"
-                        :required="true"
-                        placeholder="Selecciona un rol"
-                        :options="$roles"
-                    />
-
                     {{-- Contraseña --}}
                     <div class="flex flex-col gap-1.5">
                         <label
