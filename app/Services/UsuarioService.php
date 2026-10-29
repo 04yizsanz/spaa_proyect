@@ -28,22 +28,14 @@ class UsuarioService
     public function update(int $id, array $data)
     {
         $usuario = $this->usuarioRepository->getById($id);
-
-        if (! $usuario) {
-            return null;
-        }
-
+        if (! $usuario) return null;
         return $this->usuarioRepository->update($data, $id);
     }
 
     public function delete(int $id)
     {
         $usuario = $this->usuarioRepository->getById($id);
-
-        if (! $usuario) {
-            return null;
-        }
-
+        if (! $usuario) return null;
         return $this->usuarioRepository->delete($id);
     }
 
@@ -60,5 +52,10 @@ class UsuarioService
     public function getByNombre(string $nombre)
     {
         return $this->usuarioRepository->getByName($nombre);
+    }
+
+    public function getByEmail(string $email)
+    {
+        return $this->usuarioRepository->getByEmail($email);
     }
 }

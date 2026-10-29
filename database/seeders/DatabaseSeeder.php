@@ -18,37 +18,15 @@ class DatabaseSeeder extends Seeder
             |--------------------------------------------------------------------------
             */
 
-            $administradorId = DB::table('roles')->insertGetId([
-                'nombre' => 'Administrador',
-                'descripcion' => 'Administrador general del sistema.',
-                'estado' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // Los roles viven en RolSeeder (idempotente). Aquí solo buscamos sus ids.
+            $this->call(RolSeeder::class);
 
-            $recepcionistaId = DB::table('roles')->insertGetId([
-                'nombre' => 'Recepcionista',
-                'descripcion' => 'Gestiona clientes y citas.',
-                'estado' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $rolId = fn (string $nombre) => DB::table('roles')->where('nombre', $nombre)->value('rol_id');
 
-            $estilistaId = DB::table('roles')->insertGetId([
-                'nombre' => 'Estilista',
-                'descripcion' => 'Realiza servicios de estilismo.',
-                'estado' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            $esteticistaId = DB::table('roles')->insertGetId([
-                'nombre' => 'Esteticista',
-                'descripcion' => 'Realiza servicios de estética.',
-                'estado' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $administradorId = $rolId('Administrador');
+            $recepcionistaId = $rolId('Recepcionista');
+            $estilistaId     = $rolId('Estilista');
+            $esteticistaId   = $rolId('Esteticista');
 
 
             /*
