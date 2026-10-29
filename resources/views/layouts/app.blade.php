@@ -118,6 +118,29 @@
                     </span>
                 </nav>
 
+                {{-- Usuario autenticado + cerrar sesión --}}
+                @auth
+                <div class="hidden md:flex items-center gap-3 ml-2 pl-3" style="border-left: 1px solid var(--color-beige);">
+                    <span class="text-sm font-medium" style="color: var(--color-charcoal-light);" aria-label="Usuario: {{ Auth::user()->nombre ?? Auth::user()->email }}">
+                        {{ Auth::user()->nombre ?? Auth::user()->email }}
+                    </span>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button
+                            type="submit"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 cursor-pointer"
+                            style="color: var(--color-charcoal-muted); background-color: transparent; border: 1px solid var(--color-beige-mid);"
+                            title="Cerrar sesión"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Salir
+                        </button>
+                    </form>
+                </div>
+                @endauth
+
                 {{-- Botón hamburguesa (móvil) --}}
                 <button
                     id="menu-toggle"
@@ -166,6 +189,17 @@
                     <span class="px-3 py-2 rounded-lg text-sm" style="color: var(--color-charcoal-muted);">Ventas <span style="font-size:0.65rem; background-color:var(--color-beige); color:var(--color-charcoal-muted);" class="px-1.5 py-0.5 rounded-full">Próx.</span></span>
                     <span class="px-3 py-2 rounded-lg text-sm" style="color: var(--color-charcoal-muted);">Inventario <span style="font-size:0.65rem; background-color:var(--color-beige); color:var(--color-charcoal-muted);" class="px-1.5 py-0.5 rounded-full">Próx.</span></span>
                 </div>
+                @auth
+                <div class="pt-2 mt-1" style="border-top: 1px solid var(--color-beige);">
+                    <p class="px-3 py-1 text-xs" style="color: var(--color-charcoal-muted);">{{ Auth::user()->nombre ?? Auth::user()->email }}</p>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium" style="color: var(--color-red-soft);">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
+                @endauth
             </div>
         </div>
     </header>
