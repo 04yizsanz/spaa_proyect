@@ -44,10 +44,12 @@
                             style="color: var(--color-charcoal-muted);">
                             Rol
                         </th>
-                        <th scope="col" class="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider hidden md:table-cell"
-                            style="color: var(--color-charcoal-muted);">
-                            Contacto
-                        </th>
+                        @unless ($esCliente)
+                            <th scope="col" class="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider hidden md:table-cell"
+                                style="color: var(--color-charcoal-muted);">
+                                Contacto
+                            </th>
+                        @endunless
                         <th scope="col" class="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider"
                             style="color: var(--color-charcoal-muted);">
                             Disponibilidad
@@ -61,17 +63,21 @@
                                 <div class="font-medium">
                                     {{ $empleado->nombre }} {{ $empleado->apellido }}
                                 </div>
-                                <div class="text-xs" style="color: var(--color-charcoal-muted);">
-                                    Doc: {{ $empleado->documento }}
-                                </div>
+                                @unless ($esCliente)
+                                    <div class="text-xs" style="color: var(--color-charcoal-muted);">
+                                        Doc: {{ $empleado->documento }}
+                                    </div>
+                                @endunless
                             </td>
                             <td class="px-6 py-4 hidden sm:table-cell" style="color: var(--color-charcoal-light);">
                                 {{ ucfirst($empleado->rol) }}
                             </td>
-                            <td class="px-6 py-4 hidden md:table-cell" style="color: var(--color-charcoal-light);">
-                                <div>{{ $empleado->correo ?? '—' }}</div>
-                                <div class="text-xs">{{ $empleado->telefono ?? '' }}</div>
-                            </td>
+                            @unless ($esCliente)
+                                <td class="px-6 py-4 hidden md:table-cell" style="color: var(--color-charcoal-light);">
+                                    <div>{{ $empleado->correo ?? '—' }}</div>
+                                    <div class="text-xs">{{ $empleado->telefono ?? '' }}</div>
+                                </td>
+                            @endunless
                             <td class="px-6 py-4">
                                 <x-status-badge :status="$empleado->disponibilidad ? 'activo' : 'inactivo'" />
                             </td>

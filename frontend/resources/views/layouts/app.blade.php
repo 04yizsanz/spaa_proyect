@@ -22,6 +22,7 @@
         Saltar al contenido
     </a>
 
+    @unless (request()->routeIs('login', 'register'))
     {{-- ===== CABECERA ===== --}}
     <header
         style="background-color: var(--color-warm-white); border-bottom: 1px solid var(--color-beige);"
@@ -67,11 +68,16 @@
                             ['route' => 'empleados.index','label' => 'Empleados'],
                         ];
 
-                        // Un usuario con rol Cliente solo ve Inicio y Citas
+                        // Los clientes pueden consultar el catálogo y el equipo, pero no los datos de otros clientes.
                         if (Auth::check() && Auth::user()->esCliente()) {
                             $navItems = array_values(array_filter(
                                 $navItems,
-                                fn ($item) => in_array($item['route'], ['home', 'citas.index'])
+                                fn ($item) => in_array($item['route'], [
+                                    'home',
+                                    'citas.index',
+                                    'servicios.index',
+                                    'empleados.index',
+                                ])
                             ));
                         }
                     @endphp
@@ -211,6 +217,7 @@
             </div>
         </div>
     </header>
+    @endunless
 
     {{-- ===== MENSAJES GLOBALES DE SESIÓN ===== --}}
     {{-- Solo se muestran cuando el servidor los envía --}}
@@ -272,7 +279,6 @@
                     <span style="font-family: var(--font-serif); color: var(--color-charcoal-light); font-weight: 600;">Asha Spa</span>
                     &mdash; Sistema de gestión administrativa
                 </p>
-                <p>Desarrollado con cariño por el equipo ADSO</p>
             </div>
         </div>
     </footer>

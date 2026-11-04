@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
 
             $rolId = fn (string $nombre) => DB::table('roles')->where('nombre', $nombre)->value('rol_id');
 
-            $administradorId = $rolId('Administrador');
             $recepcionistaId = $rolId('Recepcionista');
             $estilistaId     = $rolId('Estilista');
             $esteticistaId   = $rolId('Esteticista');
@@ -34,19 +33,6 @@ class DatabaseSeeder extends Seeder
             | USUARIOS
             |--------------------------------------------------------------------------
             */
-
-            $administradorUsuarioId = DB::table('usuarios')->insertGetId([
-                'rol_id' => $administradorId,
-                'nombre' => 'Carlos',
-                'apellido' => 'Rodríguez',
-                'documento' => '1001001001',
-                'email' => 'carlos.admin@example.com',
-                'telefono' => '3001001001',
-                'password' => Hash::make('12345678'),
-                'estado' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
 
             $recepcionistaUsuarioId = DB::table('usuarios')->insertGetId([
                 'rol_id' => $recepcionistaId,
