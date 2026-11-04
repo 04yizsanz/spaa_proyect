@@ -1,6 +1,16 @@
 # Diccionario de Datos
 ## Sistema de Gestión de Spa & Salón de Belleza
 
+## Estructura del proyecto
+
+- `frontend/`: vistas Blade, estilos, JavaScript, archivos públicos y configuración de Vite.
+- `backend/`: aplicación Laravel, rutas, modelos, servicios, migraciones, pruebas y configuración de Composer.
+- `docker-compose.yml` y `Dockerfile`: configuración de los servicios locales.
+
+Para iniciar los servicios desde la raíz del proyecto, ejecuta `docker compose up -d --build`.
+Para instalar las dependencias del backend, ejecuta `composer install --working-dir=backend`.
+Para compilar los recursos del frontend, ejecuta `npm --prefix frontend install` y luego `npm --prefix frontend run build`.
+
 Incluye tres niveles de documentación (entidades, atributos y relaciones), con tipo de dato MySQL y equivalente en migraciones de Laravel para cada campo. Los campos marcados como **AMBIGUO** requieren confirmación del equipo antes de cerrar el modelo al 100%.
 
 **Módulo diferenciador:** Realidad Aumentada para prueba virtual de cortes, peinados y colores. Módulo de predicción de demanda con IA.
@@ -190,4 +200,3 @@ Cada tabla incluye tipo de dato en MySQL y su equivalente en migración Laravel.
 | TFactura | TServicio | N:M | TFacturaServicio (FacturaId, ServicioId) | Una factura incluye varios servicios y viceversa |
 | TProveedor | TProducto | 1:N | TProducto.ProveedorId | Un proveedor suministra muchos productos |
 | TProducto | TMovimientoInventario | 1:N | TMovimientoInventario.ProductoId | Un producto tiene muchos movimientos de inventario |
-

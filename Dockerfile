@@ -9,8 +9,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libsqlite3-dev \
     && docker-php-ext-install \
         pdo_mysql \
+        pdo_sqlite \
         mbstring \
         zip \
         exif \
@@ -24,15 +26,17 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY . .
 
 
-RUN composer install \
+RUN composer install --working-dir=/var/www/html/backend \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader
 
 
 RUN chown -R www-data:www-data \
-    /var/www/html/storage \
-    /var/www/html/bootstrap/cache
+    /var/www/html/backend/storage \
+    /var/www/html/backend/bootstrap/cache
+
+WORKDIR /var/www/html/backend
 
 
 EXPOSE 8000
