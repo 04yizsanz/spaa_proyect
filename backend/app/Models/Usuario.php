@@ -44,6 +44,18 @@ class Usuario extends Authenticatable
         'estado' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (Usuario $usuario): void {
+            $esAdministrador = Rol::query()
+                ->where('rol_id', $usuario->rol_id)
+                ->where('nombre', 'Administrador')
+                ->exists();
+
+            $usuario->administrador_unico = $esAdministrador ? 1 : null;
+        });
+    }
+
     public function rol()
     {
         return $this->belongsTo(Rol::class, 'rol_id', 'rol_id');

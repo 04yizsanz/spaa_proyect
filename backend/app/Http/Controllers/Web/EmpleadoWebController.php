@@ -17,14 +17,28 @@ class EmpleadoWebController extends Controller
      */
     public function index()
     {
+        $esCliente = auth()->user()->esCliente();
+
         try {
-            $empleados = Empleado::orderBy('nombre')->paginate(20);
+            $consulta = Empleado::query();
+
+            if ($esCliente) {
+                $consulta->select([
+                    'empleado_id',
+                    'nombre',
+                    'apellido',
+                    'rol',
+                    'disponibilidad',
+                ]);
+            }
+
+            $empleados = $consulta->orderBy('nombre')->paginate(20);
             $modoDemo  = false;
         } catch (Throwable $e) {
             $empleados = collect([]);
             $modoDemo  = true;
         }
 
-        return view('staff.index', compact('empleados', 'modoDemo'));
+        return view('staff.index', compact('empleados', 'modoDemo', 'esCliente'));
     }
 }
