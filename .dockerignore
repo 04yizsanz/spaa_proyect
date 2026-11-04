@@ -1,0 +1,13 @@
+.git
+.vscode
+.env
+.env.*
+!.env.example
+**/node_modules
+/backend/vendor
+/backend/.phpunit.cache
+/backend/.phpunit.result.cache
+/backend/storage/framework/cache/data/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/storage/logs/*.log
