@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,5 +41,22 @@ class Cliente extends Model
     public function venta()
     {
         return $this->hasMany(Venta::class, "cliente_id", "cliente_id"); // Un cliente tiene muchas ventas
+    }
+
+    /**
+     * Clientes que el usuario puede consultar: todos con 'clientes.ver';
+     * solo su propio perfil con 'clientes.propio'; ninguno en otro caso.
+     */
+    public function scopeVisiblePara(Builder $query, Usuario $usuario): Builder
+    {
+        if ($usuario->tienePermiso('clientes.ver')) {
+            return $query;
+        }
+
+        if ($usuario->tienePermiso('clientes.propio')) {
+            return $query->where($this->qualifyColumn('usuario_id'), $usuario->usuario_id);
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 }

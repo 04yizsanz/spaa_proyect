@@ -48,6 +48,14 @@ class MovimientoInventarioController extends Controller
     public function update(UpdateMovimientoInventarioRequest $datosActualizar, int $id)
     {
         $registroActualizado = $this->movimientoInventarioService->update($id, $datosActualizar->validated());
+
+        if (! $registroActualizado) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
         return response()->json([
             'success' => 'El movimiento se actualizó correctamente',
             'data' => $registroActualizado
@@ -56,7 +64,13 @@ class MovimientoInventarioController extends Controller
 
     public function destroy(int $id)
     {
-        $this->movimientoInventarioService->destroy($id);
+        if (! $this->movimientoInventarioService->destroy($id)) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
         return response()->json([
             'success' => 'El movimiento se eliminó correctamente'
         ], 200);

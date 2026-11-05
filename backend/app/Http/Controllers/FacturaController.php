@@ -2,79 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\FacturaInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\Factura\StoreFacturaRequest;
+use App\Http\Requests\Factura\UpdateFacturaRequest;
+use App\Services\FacturaService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
+/**
+ * API de facturas.
+ *  - Listar y crear se autorizan en la ruta (FacturaPolicy::viewAny / create).
+ *  - Cada factura se autoriza aquí; una factura ajena responde 404.
+ *  - subtotal y total los calcula el servidor (FacturaService).
+ *  - Las facturas no se eliminan: destroy siempre responde 403.
+ */
 class FacturaController extends Controller
 {
-    protected FacturaInterface $facturaRepository;
+    public function __construct(
+        protected FacturaService $facturaService
+    ) {}
 
-    public function __construct(FacturaInterface $facturaRepository)
+    public function index(Request $request): JsonResponse
     {
-        $this->facturaRepository = $facturaRepository;
+        return response()->json($this->facturaService->listarPara($request->user()), 200);
     }
 
-    public function index(): JsonResponse
+    public function store(StoreFacturaRequest $request): JsonResponse
     {
-        $facturas = $this->facturaRepository->all();
-        return response()->json($facturas, 200);
-    }
+        $factura = $this->facturaService->store($request->validated(), $request->user());
 
-    public function store(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'cliente_id' => 'required|integer|exists:clientes,cliente_id',
-            'fecha_hora' => 'required|date',
-            'subtotal' => 'required|numeric|min:0',
-            'impuestos' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
-            'pdf_url' => 'sometimes|nullable|string|max:255',
-        ]);
-
-        $factura = $this->facturaRepository->create($validated);
         return response()->json($factura, 201);
     }
 
-    public function show(int $factura_id): JsonResponse
+    public function show(Request $request, int $factura_id): JsonResponse
     {
-        $factura = $this->facturaRepository->find($factura_id);
+        $factura = $this->facturaService->buscarVisible($factura_id, $request->user());
 
-        if (!$factura) {
+        if (! $factura) {
             return response()->json(['message' => 'Factura no encontrada'], 404);
         }
+
+        Gate::authorize('view', $factura);
 
         return response()->json($factura, 200);
     }
 
-    public function update(Request $request, int $factura_id): JsonResponse
+    public function update(UpdateFacturaRequest $request, int $factura_id): JsonResponse
     {
-        $validated = $request->validate([
-            'cliente_id' => 'sometimes|integer|exists:clientes,cliente_id',
-            'fecha_hora' => 'sometimes|date',
-            'subtotal' => 'sometimes|numeric|min:0',
-            'impuestos' => 'sometimes|numeric|min:0',
-            'total' => 'sometimes|numeric|min:0',
-            'pdf_url' => 'sometimes|nullable|string|max:255',
-        ]);
+        $factura = $this->facturaService->buscarVisible($factura_id, $request->user());
 
-        $factura = $this->facturaRepository->update($validated, $factura_id);
-
-        if (!$factura) {
+        if (! $factura) {
             return response()->json(['message' => 'Factura no encontrada'], 404);
         }
+
+        Gate::authorize('update', $factura);
+
+        $factura = $this->facturaService->update($factura, $request->validated(), $request->user());
 
         return response()->json($factura, 200);
     }
 
-    public function destroy(int $factura_id): JsonResponse
+    public function destroy(Request $request, int $factura_id): JsonResponse
     {
-        $deleted = $this->facturaRepository->delete($factura_id);
+        $factura = $this->facturaService->buscarVisible($factura_id, $request->user());
 
-        if (!$deleted) {
+        if (! $factura) {
             return response()->json(['message' => 'Factura no encontrada'], 404);
         }
 
-        return response()->json(['message' => 'Factura eliminada correctamente'], 200);
+        // FacturaPolicy::delete deniega siempre: los registros financieros se conservan.
+        Gate::authorize('delete', $factura);
+
+        return response()->json(['message' => 'Los registros financieros no se eliminan.'], 403);
     }
 }

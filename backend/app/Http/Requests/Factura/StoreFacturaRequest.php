@@ -4,6 +4,10 @@ namespace App\Http\Requests\Factura;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * subtotal y total los calcula el servidor (FacturaService); no se aceptan
+ * desde el cliente. La autorización la aplica la ruta (can:create, FacturaPolicy).
+ */
 class StoreFacturaRequest extends FormRequest
 {
     public function authorize(): bool
@@ -16,10 +20,10 @@ class StoreFacturaRequest extends FormRequest
         return [
             'cliente_id' => 'required|integer|exists:clientes,cliente_id',
             'fecha_hora' => 'required|date',
-            'subtotal' => 'required|numeric|min:0',
-            'impuestos' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
+            'impuestos' => 'nullable|numeric|min:0',
             'pdf_url' => 'sometimes|nullable|string|max:255',
+            'subtotal' => 'prohibited',
+            'total' => 'prohibited',
         ];
     }
 
@@ -28,7 +32,9 @@ class StoreFacturaRequest extends FormRequest
         return [
             'cliente_id.required' => 'El cliente es obligatorio.',
             'cliente_id.exists' => 'El cliente indicado no existe.',
-            'total.min' => 'El total no puede ser negativo.',
+            'impuestos.min' => 'Los impuestos no pueden ser negativos.',
+            'subtotal.prohibited' => 'El subtotal lo calcula el servidor a partir del detalle de la factura.',
+            'total.prohibited' => 'El total lo calcula el servidor (subtotal + impuestos).',
         ];
     }
 }

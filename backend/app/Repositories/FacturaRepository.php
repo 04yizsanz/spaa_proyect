@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Interfaces\FacturaInterface;
 use App\Models\Factura;
+use App\Models\Usuario;
 use DateTime;
+use Illuminate\Database\Eloquent\Collection;
 
 class FacturaRepository extends BaseRepository implements FacturaInterface
 {
@@ -66,5 +68,15 @@ class FacturaRepository extends BaseRepository implements FacturaInterface
         }
 
         return $facturas;
+    }
+
+    public function visiblesPara(Usuario $usuario): Collection
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->get();
+    }
+
+    public function buscarVisible(int $id, Usuario $usuario): ?Factura
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->find($id);
     }
 }

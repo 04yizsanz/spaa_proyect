@@ -14,14 +14,15 @@ class UpdateRolRequest extends FormRequest
 
     public function rules(): array
     {
-        $rolId = $this->route('rol');
+        // apiResource('roles') genera el parámetro {role}; la PK de la tabla es rol_id.
+        $rolId = $this->route('role');
 
         return [
             'nombre' => [
                 'sometimes',
                 'string',
-                'max:100',
-                Rule::unique('roles', 'nombre')->ignore($rolId),
+                'max:50',
+                Rule::unique('roles', 'nombre')->ignore($rolId, 'rol_id'),
             ],
             'descripcion' => [
                 'sometimes',

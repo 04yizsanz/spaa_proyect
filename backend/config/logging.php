@@ -73,6 +73,16 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Operaciones financieras sensibles (pagos y facturas). Solo identificadores
+        // e importes, sin datos personales.
+        'auditoria' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/auditoria.log'),
+            'level' => env('LOG_AUDITORIA_LEVEL', 'info'),
+            'days' => env('LOG_AUDITORIA_DAYS', 90),
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

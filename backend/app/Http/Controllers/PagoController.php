@@ -2,78 +2,77 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Repositories\PagoRepository;
-use Illuminate\Http\Request;
+use App\Http\Requests\Pago\StorePagoRequest;
+use App\Http\Requests\Pago\UpdatePagoRequest;
+use App\Services\PagoService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
+/**
+ * API de pagos.
+ *  - Listar y registrar se autorizan en la ruta (PagoPolicy::viewAny / create).
+ *  - Un pago ajeno responde 404.
+ *  - Solo los pagos 'pendiente' se modifican; aprobado o rechazado → 409.
+ *  - Los pagos no se eliminan: destroy siempre responde 403.
+ */
 class PagoController extends Controller
 {
-    protected PagoRepository $pagoRepository;
+    public function __construct(
+        protected PagoService $pagoService
+    ) {}
 
-    public function __construct(PagoRepository $pagoRepository)
+    public function index(Request $request): JsonResponse
     {
-        $this->pagoRepository = $pagoRepository;
+        return response()->json($this->pagoService->listarPara($request->user()), 200);
     }
 
-    public function index(): JsonResponse
+    public function store(StorePagoRequest $request): JsonResponse
     {
-        $pagos = $this->pagoRepository->all();
-        return response()->json($pagos, 200);
-    }
+        $pago = $this->pagoService->store($request->validated(), $request->user());
 
-    public function store(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'codigo_cita'      => 'required|integer|exists:citas,codigo_cita',
-            'monto'            => 'required|numeric|min:0',
-            'metodo'           => 'required|string|in:efectivo,tarjeta,transferencia,pse',
-            'fecha_hora'       => 'required|date',
-            'estado'           => 'sometimes|string|in:pendiente,aprobado,rechazado',
-        ]);
-
-        $pago = $this->pagoRepository->create($validated);
         return response()->json($pago, 201);
     }
 
-    public function show(int $pago_id): JsonResponse
+    public function show(Request $request, int $pago_id): JsonResponse
     {
-        $pago = $this->pagoRepository->find($pago_id);
+        $pago = $this->pagoService->buscarVisible($pago_id, $request->user());
 
-        if (!$pago) {
+        if (! $pago) {
             return response()->json(['message' => 'Pago no encontrado'], 404);
         }
+
+        Gate::authorize('view', $pago);
 
         return response()->json($pago, 200);
     }
 
-    public function update(Request $request, int $pago_id): JsonResponse
+    public function update(UpdatePagoRequest $request, int $pago_id): JsonResponse
     {
-        $validated = $request->validate([
-            'codigo_cita'      => 'sometimes|integer|exists:citas,codigo_cita',
-            'monto'            => 'sometimes|numeric|min:0',
-            'metodo'           => 'sometimes|string|in:efectivo,tarjeta,transferencia,pse',
-            'fecha_hora'       => 'sometimes|date',
-            'estado'           => 'sometimes|string|in:pendiente,aprobado,rechazado',
-        ]);
+        $pago = $this->pagoService->buscarVisible($pago_id, $request->user());
 
-        $pago = $this->pagoRepository->update($validated, $pago_id);
-
-        if (!$pago) {
+        if (! $pago) {
             return response()->json(['message' => 'Pago no encontrado'], 404);
         }
+
+        Gate::authorize('update', $pago);
+
+        $pago = $this->pagoService->update($pago, $request->validated(), $request->user());
 
         return response()->json($pago, 200);
     }
 
-    public function destroy(int $pago_id): JsonResponse
+    public function destroy(Request $request, int $pago_id): JsonResponse
     {
-        $deleted = $this->pagoRepository->delete($pago_id);
+        $pago = $this->pagoService->buscarVisible($pago_id, $request->user());
 
-        if (!$deleted) {
+        if (! $pago) {
             return response()->json(['message' => 'Pago no encontrado'], 404);
         }
 
-        return response()->json(['message' => 'Pago eliminado correctamente'], 200);
+        // PagoPolicy::delete deniega siempre: los registros financieros se conservan.
+        Gate::authorize('delete', $pago);
+
+        return response()->json(['message' => 'Los registros financieros no se eliminan.'], 403);
     }
 }

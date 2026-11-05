@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Interfaces\PagoInterface;
 use App\Models\Pago;
+use App\Models\Usuario;
 use DateTime;
+use Illuminate\Database\Eloquent\Collection;
 
 class PagoRepository extends BaseRepository implements PagoInterface
 {
@@ -55,5 +57,15 @@ class PagoRepository extends BaseRepository implements PagoInterface
         }
 
         return $pagos;
+    }
+
+    public function visiblesPara(Usuario $usuario): Collection
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->get();
+    }
+
+    public function buscarVisible(int $id, Usuario $usuario): ?Pago
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->find($id);
     }
 }

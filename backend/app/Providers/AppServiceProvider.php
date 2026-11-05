@@ -26,9 +26,15 @@ use App\Interfaces\ProductoInterface;
 use App\Repositories\ProductoRepository;
 use App\Interfaces\MovimientoInventarioInterface;
 use App\Repositories\MovimientoInventarioRepository;
+use App\Models\Usuario;
 
-
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -113,6 +119,37 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Gestión de roles y usuarios: solo con el permiso explícito (denegación por defecto).
+        Gate::define(
+            'administrar-sistema',
+            fn (Usuario $usuario): bool => $usuario->tienePermiso('sistema.administrar')
+        );
+
+        // Inicio de sesión (web y API): por correo + IP y, además, por IP.
+        RateLimiter::for('login', function (Request $request) {
+            $correo = Str::lower((string) $request->input('email'));
+
+            return [
+                Limit::perMinute(5)->by('login:'.$correo.'|'.$request->ip()),
+                Limit::perMinute(20)->by('login-ip:'.$request->ip()),
+            ];
+        });
+
+        // Registro público de cuentas.
+        RateLimiter::for('registro', fn (Request $request) => Limit::perMinute(5)->by('registro:'.$request->ip()));
+
+        // API (usado por throttleApi()): por usuario autenticado o, si no hay, por IP.
+        RateLimiter::for('api', function (Request $request) {
+            $usuarioId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(120)->by($usuarioId ? 'api-usuario:'.$usuarioId : 'api-ip:'.$request->ip());
+        });
+
+        // Política de contraseñas para cuentas nuevas y cambios de contraseña.
+        Password::defaults(function () {
+            $regla = Password::min(8)->letters()->mixedCase()->numbers();
+
+            return $this->app->isProduction() ? $regla->uncompromised() : $regla;
+        });
     }
 }
