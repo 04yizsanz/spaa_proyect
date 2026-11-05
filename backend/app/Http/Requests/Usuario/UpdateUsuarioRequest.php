@@ -4,13 +4,15 @@ namespace App\Http\Requests\Usuario;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use App\Models\Rol;
 
 class UpdateUsuarioRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->rol?->nombre === 'Administrador';
+        // Gate 'administrar-sistema': cuenta y rol activos con el permiso 'sistema.administrar'.
+        return (bool) $this->user()?->can('administrar-sistema');
     }
 
     public function rules(): array
@@ -37,7 +39,7 @@ class UpdateUsuarioRequest extends FormRequest
                 Rule::unique('usuarios', 'email')->ignore($usuarioId, 'usuario_id'),
             ],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'password' => ['nullable', 'string', 'min:8'],
+            'password' => ['nullable', 'string', Password::defaults()],
             'estado' => ['required', 'boolean'],
         ];
     }

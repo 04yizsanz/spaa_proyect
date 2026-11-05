@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Cita;
+use App\Models\Usuario;
 use App\Interfaces\CitaInterface;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -62,5 +63,35 @@ class CitaRepository extends BaseRepository implements CitaInterface
         $cita->estado = $estado;
 
         return $cita->save();
+    }
+
+    public function visiblesPara(Usuario $usuario): Collection
+    {
+        return $this->model->newQuery()
+            ->visiblePara($usuario)
+            ->orderBy('fecha', 'desc')
+            ->orderBy('hora')
+            ->get();
+    }
+
+    public function buscarVisible(int $id, Usuario $usuario): ?Cita
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->find($id);
+    }
+
+    public function existeCitaEnHorario(int $empleadoId, string $fecha, string $hora, ?int $exceptoCitasId = null): bool
+    {
+        return $this->model->newQuery()
+            ->where('empleado_id', $empleadoId)
+            ->whereDate('fecha', $fecha)
+            ->where('hora', $hora)
+            ->where('estado', '!=', 'cancelada')
+            ->when($exceptoCitasId !== null, fn ($query) => $query->whereKeyNot($exceptoCitasId))
+            ->exists();
+    }
+
+    public function siguienteCodigo(): int
+    {
+        return ((int) $this->model->newQuery()->withTrashed()->max('codigo_cita')) + 1;
     }
 }

@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Usuario extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table      = 'usuarios';
     protected $primaryKey = 'usuario_id';
@@ -69,6 +70,43 @@ class Usuario extends Authenticatable
     public function esCliente(): bool
     {
         return $this->rol?->nombre === 'Cliente';
+    }
+
+    /**
+     * La cuenta puede operar solo si el usuario está activo, tiene un rol,
+     * ese rol está activo y está definido en config/permisos.php.
+     * Cualquier otro caso (sin rol, rol inactivo, rol desconocido o
+     * renombrado) se deniega por defecto.
+     */
+    public function estaHabilitado(): bool
+    {
+        $rol = $this->rol;
+
+        return (bool) $this->estado
+            && $rol !== null
+            && (bool) $rol->estado
+            && array_key_exists($rol->nombre, config('permisos.roles', []));
+    }
+
+    /**
+     * Permisos efectivos según el rol. Vacío si la cuenta no está habilitada.
+     *
+     * @return array<int, string>
+     */
+    public function permisos(): array
+    {
+        if (! $this->estaHabilitado()) {
+            return [];
+        }
+
+        return config('permisos.roles', [])[$this->rol->nombre] ?? [];
+    }
+
+    public function tienePermiso(string $permiso): bool
+    {
+        $permisos = $this->permisos();
+
+        return in_array('*', $permisos, true) || in_array($permiso, $permisos, true);
     }
 
     public function empleado()

@@ -6,26 +6,36 @@ use App\Http\Requests\Cita\StoreCitaRequest;
 use App\Http\Requests\Cita\UpdateCitaRequest;
 use App\Services\CitaService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
 
+/**
+ * API de citas. Las rutas exigen auth:sanctum + cuenta activa; listar y crear
+ * se autorizan en la ruta (CitaPolicy::viewAny / create) y cada cita concreta
+ * aquí, con CitaPolicy. Una cita ajena responde 404.
+ */
 class CitaController extends Controller
 {
     public function __construct(
         protected CitaService $citaService
     ) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return response()->json($this->citaService->getAll());
+        // Toda la agenda con 'citas.ver_todas'; solo las propias con 'citas.propias'.
+        return response()->json($this->citaService->listarPara($request->user()));
     }
 
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
-        $cita = $this->citaService->getById($id);
+        $cita = $this->citaService->buscarVisible($id, $request->user());
 
         if (! $cita) {
             return response()->json(['message' => 'Cita no encontrada'], 404);
         }
+
+        Gate::authorize('view', $cita);
 
         return response()->json($cita);
     }
@@ -33,7 +43,7 @@ class CitaController extends Controller
     public function store(StoreCitaRequest $request): JsonResponse
     {
         try {
-            $cita = $this->citaService->create($request->validated());
+            $cita = $this->citaService->crear($request->validated(), $request->user());
         } catch (InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 409);
         }
@@ -43,29 +53,45 @@ class CitaController extends Controller
 
     public function update(UpdateCitaRequest $request, int $id): JsonResponse
     {
-        try {
-            $updated = $this->citaService->update($id, $request->validated());
-        } catch (InvalidArgumentException $e) {
-            return response()->json(['message' => $e->getMessage()], 409);
+        $cita = $this->citaService->buscarVisible($id, $request->user());
+
+        if (! $cita) {
+            return response()->json(['message' => 'Cita no encontrada'], 404);
         }
 
-        if (! $updated) {
-            return response()->json(['message' => 'Cita no encontrada'], 404);
+        Gate::authorize('update', $cita);
+
+        try {
+            $this->citaService->actualizar($cita, $request->validated(), $request->user());
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
         }
 
         return response()->json(['message' => 'Cita actualizada correctamente']);
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(Request $request, int $id): JsonResponse
     {
-        $deleted = $this->citaService->delete($id);
+        $cita = $this->citaService->buscarVisible($id, $request->user());
 
-        if (! $deleted) {
+        if (! $cita) {
             return response()->json(['message' => 'Cita no encontrada'], 404);
         }
 
+        Gate::authorize('delete', $cita);
+
+        $this->citaService->eliminar($cita);
+
         return response()->json(['message' => 'Cita eliminada correctamente']);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Métodos sin ruta registrada
+    |--------------------------------------------------------------------------
+    | Se conservan tal como estaban. Si en el futuro se les asigna una ruta,
+    | deben filtrar por Cita::visiblePara() y autorizar con CitaPolicy.
+    */
 
     public function porCliente(int $clienteId): JsonResponse
     {

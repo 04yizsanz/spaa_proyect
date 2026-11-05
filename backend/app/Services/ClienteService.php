@@ -3,12 +3,29 @@
 namespace App\Services;
 
 use App\Interfaces\ClienteInterface;
+use App\Models\Usuario;
 
 class ClienteService
 {
     public function __construct(
         protected ClienteInterface $clienteRepository
     ) {}
+
+    /**
+     * Clientes que el usuario puede consultar.
+     */
+    public function listarPara(Usuario $actor)
+    {
+        return $this->clienteRepository->visiblesPara($actor);
+    }
+
+    /**
+     * Cliente por id solo si el usuario puede verlo; null en otro caso (se responde 404).
+     */
+    public function buscarVisible(int $id, Usuario $actor)
+    {
+        return $this->clienteRepository->buscarVisible($id, $actor);
+    }
 
     public function getAll()
     {
