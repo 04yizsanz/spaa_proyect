@@ -219,14 +219,16 @@
             </x-card>
         </a>
 
-        {{-- Acceso: Clientes --}}
-        <a href="{{ route('clientes.index') }}" class="group block">
-            <x-card padding="md" class="h-full text-center transition-all duration-150 group-hover:shadow-md">
-                <div class="text-2xl mb-2" aria-hidden="true">👤</div>
-                <p class="text-sm font-semibold" style="color: var(--color-charcoal);">Clientes</p>
-                <p class="text-xs mt-1" style="color: var(--color-charcoal-muted);">Información y registro</p>
-            </x-card>
-        </a>
+        @if (! auth()->user()->esCliente())
+            {{-- Acceso: Clientes --}}
+            <a href="{{ route('clientes.index') }}" class="group block">
+                <x-card padding="md" class="h-full text-center transition-all duration-150 group-hover:shadow-md">
+                    <div class="text-2xl mb-2" aria-hidden="true">👤</div>
+                    <p class="text-sm font-semibold" style="color: var(--color-charcoal);">Clientes</p>
+                    <p class="text-xs mt-1" style="color: var(--color-charcoal-muted);">Información y registro</p>
+                </x-card>
+            </a>
+        @endif
 
         {{-- Acceso: Servicios --}}
         <a href="{{ route('servicios.index') }}" class="group block">

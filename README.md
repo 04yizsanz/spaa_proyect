@@ -10,6 +10,7 @@
 Para iniciar los servicios desde la raíz del proyecto, ejecuta `docker compose up -d --build`.
 Para instalar las dependencias del backend, ejecuta `composer install --working-dir=backend`.
 Para compilar los recursos del frontend, ejecuta `npm --prefix frontend install` y luego `npm --prefix frontend run build`.
+El registro público solo crea cuentas de Cliente. Para asignar el único administrador, registra primero su cuenta y ejecuta `docker compose exec app php artisan app:make-administrator correo@ejemplo.com`, sustituyendo el correo por el de esa cuenta.
 
 Incluye tres niveles de documentación (entidades, atributos y relaciones), con tipo de dato MySQL y equivalente en migraciones de Laravel para cada campo. Los campos marcados como **AMBIGUO** requieren confirmación del equipo antes de cerrar el modelo al 100%.
 

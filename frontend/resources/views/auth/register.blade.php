@@ -61,6 +61,27 @@
                         />
                     </div>
 
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-sm font-medium" style="color: var(--color-charcoal);">
+                            Tipo de cuenta
+                        </span>
+                        <div
+                            class="flex items-center justify-between rounded-lg px-3 py-2"
+                            style="background-color: var(--color-warm-white); border: 1px solid var(--color-beige-mid);"
+                        >
+                            <span class="text-sm" style="color: var(--color-charcoal);">Cliente</span>
+                            <span
+                                class="text-xs px-2 py-1 rounded-full font-medium"
+                                style="background-color: var(--color-sage-light); color: var(--color-sage-dark);"
+                            >
+                                Rol asignado
+                            </span>
+                        </div>
+                        <p class="text-xs" style="color: var(--color-charcoal-muted);">
+                            Por seguridad, los roles del equipo y de administrador los asigna un administrador del sistema.
+                        </p>
+                    </div>
+
                     {{-- Documento --}}
                     <x-form-field
                         name="documento"

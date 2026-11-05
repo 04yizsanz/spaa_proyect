@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Middleware\EnsureAdministrator;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\CitaController;
@@ -40,11 +41,10 @@ Route::name('api.')->group(function () {
     Route::patch('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'update']);
     Route::delete('factura-servicios/{factura_id}/{servicio_id}', [FacturaServicioController::class, 'destroy']);
 
-    // Rol
-    Route::apiResource('roles', RolController::class);
-
-    // Usuario
-    Route::apiResource('usuarios', UsuarioController::class);
+    Route::middleware(['auth:sanctum', EnsureAdministrator::class])->group(function () {
+        Route::apiResource('roles', RolController::class);
+        Route::apiResource('usuarios', UsuarioController::class);
+    });
 
     // Cliente
     Route::apiResource('clientes', ClienteController::class);
