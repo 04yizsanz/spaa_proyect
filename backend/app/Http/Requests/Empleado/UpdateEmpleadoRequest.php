@@ -16,7 +16,8 @@ class UpdateEmpleadoRequest extends FormRequest
         return [
             'nombre' => ['sometimes', 'string', 'max:50'],
             'apellido' => ['sometimes', 'string', 'max:50'],
-            'documento' => ['sometimes', 'string', 'max:20', 'unique:empleados,documento,' . $this->route('id') . ',empleado_id'],
+            // El parámetro de ruta del apiResource es {empleado} (antes se leía 'id' y no se excluía el propio registro).
+            'documento' => ['sometimes', 'string', 'max:20', Rule::unique('empleados', 'documento')->ignore($this->route('empleado'), 'empleado_id')],
             'correo' => ['nullable', 'email', 'max:100'],
             'telefono' => ['nullable', 'string', 'max:20'],
             'rol' => ['sometimes', 'in:estilista,Estetisista,recepcionista,admin'],

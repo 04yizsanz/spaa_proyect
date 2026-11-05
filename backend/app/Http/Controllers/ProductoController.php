@@ -50,6 +50,14 @@ class ProductoController extends Controller
     public function update(UpdateProductoRequest $datosActualizar, int $id)
     {
         $registroActualizado = $this->productoService->update($id, $datosActualizar->validated());
+
+        if (! $registroActualizado) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
         return response()->json([
             'success' => 'El producto se actualizó correctamente',
             'data' => $registroActualizado
@@ -58,7 +66,13 @@ class ProductoController extends Controller
 
     public function destroy(int $id)
     {
-        $this->productoService->destroy($id);
+        if (! $this->productoService->destroy($id)) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
         return response()->json([
             'success' => 'El producto se eliminó correctamente'
         ], 200);

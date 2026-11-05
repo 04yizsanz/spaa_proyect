@@ -4,13 +4,15 @@ namespace App\Http\Requests\Usuario;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use App\Models\Rol;
 
 class StoreUsuarioRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->rol?->nombre === 'Administrador';
+        // Gate 'administrar-sistema': cuenta y rol activos con el permiso 'sistema.administrar'.
+        return (bool) $this->user()?->can('administrar-sistema');
     }
 
     public function rules(): array
@@ -29,7 +31,7 @@ class StoreUsuarioRequest extends FormRequest
             'documento' => ['required', 'string', 'max:20', 'unique:usuarios,documento'],
             'email' => ['required', 'string', 'email', 'max:150', 'unique:usuarios,email'],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', Password::defaults()],
             'estado' => ['required', 'boolean'],
         ];
     }

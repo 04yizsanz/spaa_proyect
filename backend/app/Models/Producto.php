@@ -23,11 +23,11 @@
 
 
             public function proveedor(){
-                return $this->belongsTo(Proveedor::class);
+                return $this->belongsTo(Proveedor::class, 'proveedor_id', 'proveedor_id');
             }
             public function movimiento_inventario()
         {
-            return $this->hasMany(MovimientoInventario::class,);
+            return $this->hasMany(MovimientoInventario::class, 'producto_id', 'producto_id');
         }
             
             // hasMany: muchos 

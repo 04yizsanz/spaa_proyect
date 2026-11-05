@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -33,5 +34,26 @@ class FacturaServicio extends Model
     public function servicio()
     {
         return $this->belongsTo(Servicio::class, 'servicio_id', 'servicio_id');
+    }
+
+    /**
+     * Líneas de factura visibles: las mismas reglas que la factura.
+     */
+    public function scopeVisiblePara(Builder $query, Usuario $usuario): Builder
+    {
+        if ($usuario->tienePermiso('facturas.ver_todas')) {
+            return $query;
+        }
+
+        $clienteId = $usuario->cliente?->cliente_id;
+
+        if ($usuario->tienePermiso('facturas.propias') && $clienteId !== null) {
+            return $query->whereIn(
+                $this->qualifyColumn('factura_id'),
+                Factura::query()->select('factura_id')->where('cliente_id', $clienteId)
+            );
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 }

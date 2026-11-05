@@ -50,6 +50,14 @@ class ProveedorController extends Controller
     public function update(UpdateProveedorRequest $datosActualizar, int $id)
     {
         $registroActualizado = $this->proveedorService->update($id, $datosActualizar->validated());
+
+        if (! $registroActualizado) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
         return response()->json([
             'success' => 'El proveedor se actualizó correctamente',
             'data' => $registroActualizado
@@ -58,7 +66,13 @@ class ProveedorController extends Controller
 //destroy sirve para eliminar un registro
     public function destroy(int $id)
     {
-        $this->proveedorService->destroy($id);
+        if (! $this->proveedorService->destroy($id)) {
+            return response()->json([
+                'not_found' => 'Not found',
+                'message' => 'No se encontró el registro'
+            ], 404);
+        }
+
         return response()->json([
             'success' => 'El proveedor se eliminó correctamente'
         ], 200);

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -64,5 +65,24 @@ class Cita extends Model
     public function servicio(): BelongsTo
     {
         return $this->belongsTo(Servicio::class, 'servicio_id', 'servicio_id');
+    }
+
+    /**
+     * Citas que el usuario puede consultar: toda la agenda con
+     * 'citas.ver_todas'; solo las suyas con 'citas.propias'; ninguna en otro caso.
+     */
+    public function scopeVisiblePara(Builder $query, Usuario $usuario): Builder
+    {
+        if ($usuario->tienePermiso('citas.ver_todas')) {
+            return $query;
+        }
+
+        $clienteId = $usuario->cliente?->cliente_id;
+
+        if ($usuario->tienePermiso('citas.propias') && $clienteId !== null) {
+            return $query->where($this->qualifyColumn('cliente_id'), $clienteId);
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 }

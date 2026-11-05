@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Interfaces\ClienteInterface;
 use App\Models\Cliente;
+use App\Models\Usuario;
+use Illuminate\Database\Eloquent\Collection;
 
 class ClienteRepository extends BaseRepository implements ClienteInterface
 {
@@ -37,6 +39,16 @@ class ClienteRepository extends BaseRepository implements ClienteInterface
                 $query->where('documento', $document);
             })
             ->first();
+    }
+
+    public function visiblesPara(Usuario $usuario): Collection
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->get();
+    }
+
+    public function buscarVisible(int $id, Usuario $usuario): ?Cliente
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->find($id);
     }
 }
 

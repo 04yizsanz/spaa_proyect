@@ -22,7 +22,8 @@ class UpdateProveedorRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('proveedor', 'registro_tributario')->ignore($this->route('proveedor'), 'proveedor_id'),
+                // apiResource('proveedores') genera el parámetro {proveedore} (singular automático de Laravel).
+                Rule::unique('proveedor', 'registro_tributario')->ignore($this->route('proveedore'), 'proveedor_id'),
             ],
         ];
     }

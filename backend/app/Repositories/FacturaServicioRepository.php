@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Interfaces\FacturaServicioInterface;
 use App\Models\FacturaServicio;
+use App\Models\Usuario;
+use Illuminate\Database\Eloquent\Collection;
 
 class FacturaServicioRepository extends BaseRepository implements FacturaServicioInterface
 {
@@ -92,5 +94,27 @@ class FacturaServicioRepository extends BaseRepository implements FacturaServici
         }
 
         return $registros;
+    }
+
+    public function visiblesPara(Usuario $usuario): Collection
+    {
+        return $this->model->newQuery()->visiblePara($usuario)->get();
+    }
+
+    public function buscarVisible(int $facturaId, int $servicioId, Usuario $usuario): ?FacturaServicio
+    {
+        return $this->model->newQuery()
+            ->visiblePara($usuario)
+            ->where('factura_id', $facturaId)
+            ->where('servicio_id', $servicioId)
+            ->first();
+    }
+
+    public function existeLinea(int $facturaId, int $servicioId): bool
+    {
+        return $this->model->newQuery()
+            ->where('factura_id', $facturaId)
+            ->where('servicio_id', $servicioId)
+            ->exists();
     }
 }

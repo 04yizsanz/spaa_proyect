@@ -34,7 +34,8 @@ class ServicioService
 
     public function delete(int $id): bool
     {
-        return $this->servicioRepository->delete($id);
+        // El repositorio devuelve null si el servicio no existe (antes provocaba un TypeError → 500).
+        return (bool) $this->servicioRepository->delete($id);
     }
 
     public function getActivos(): Collection
