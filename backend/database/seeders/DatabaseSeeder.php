@@ -112,10 +112,10 @@ class DatabaseSeeder extends Seeder
             */
 
             $empleadoEstilistaId = DB::table('empleados')->insertGetId([
-                'nombre' => 'Andrés',
-                'apellido' => 'Martínez',
+                'nombre' => 'Jessica',
+                'apellido' => 'Gómez',
                 'documento' => '1010000001',
-                'correo' => 'andres.estilista@salon.com',
+                'correo' => 'jessica.estilista@salon.com',
                 'telefono' => '3101000001',
                 'rol' => 'estilista',
                 'salario' => 1800000,
@@ -126,10 +126,10 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $empleadoEsteticistaId = DB::table('empleados')->insertGetId([
-                'nombre' => 'Sofía',
-                'apellido' => 'López',
+                'nombre' => 'Andrea',
+                'apellido' => 'Rojas',
                 'documento' => '1010000002',
-                'correo' => 'sofia.esteticista@salon.com',
+                'correo' => 'andrea.esteticista@salon.com',
                 'telefono' => '3101000002',
                 'rol' => 'Estetisista',
                 'salario' => 1900000,
@@ -140,10 +140,10 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $empleadoEstilista2Id = DB::table('empleados')->insertGetId([
-                'nombre' => 'Mariana',
-                'apellido' => 'Torres',
+                'nombre' => 'Sandra',
+                'apellido' => 'Pérez',
                 'documento' => '1010000003',
-                'correo' => 'mariana.estilista@salon.com',
+                'correo' => 'sandra.estilista@salon.com',
                 'telefono' => '3101000003',
                 'rol' => 'estilista',
                 'salario' => 1750000,
@@ -154,10 +154,10 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $empleadoRecepcionistaId = DB::table('empleados')->insertGetId([
-                'nombre' => 'Paula',
-                'apellido' => 'Ramírez',
+                'nombre' => 'Camila',
+                'apellido' => 'Torres',
                 'documento' => '1010000004',
-                'correo' => 'paula.recepcion@salon.com',
+                'correo' => 'camila.recepcion@salon.com',
                 'telefono' => '3101000004',
                 'rol' => 'recepcionista',
                 'salario' => 1600000,
@@ -223,6 +223,28 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            foreach ([
+                ['Masajes', 'Servicio de masajes.'],
+                ['Depilación de cejas', 'Depilación de cejas.'],
+                ['Depilación corporal', 'Depilación corporal.'],
+                ['Depilación bikini', 'Depilación de la zona bikini.'],
+                ['Depilación de piernas', 'Depilación de piernas.'],
+                ['Planchado', 'Planchado de cabello.'],
+                ['Alisado', 'Alisado de cabello.'],
+                ['Decoloraciones', 'Decoloración de cabello.'],
+                ['Tintura', 'Tintura de cabello.'],
+            ] as [$nombre, $descripcion]) {
+                DB::table('servicios')->insert([
+                    'nombre' => $nombre,
+                    'duracion_min' => 60,
+                    'precio' => 0,
+                    'descripcion' => $descripcion,
+                    'activo' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
 
 
             /*
@@ -489,5 +511,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ]);
         });
+
+        $this->call(CitaCatalogoSeeder::class);
     }
 }

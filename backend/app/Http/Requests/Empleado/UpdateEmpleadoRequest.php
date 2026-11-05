@@ -19,7 +19,7 @@ class UpdateEmpleadoRequest extends FormRequest
             'documento' => ['sometimes', 'string', 'max:20', 'unique:empleados,documento,' . $this->route('id') . ',empleado_id'],
             'correo' => ['nullable', 'email', 'max:100'],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'rol' => ['sometimes', 'in:estilista,Estetisista,recepcionista,admin'],
+            'rol' => ['sometimes', 'in:estilista,Estetisista,recepcionista,admin,administrador,manicurista'],
             'salario' => ['sometimes', 'numeric', 'gt:0'],
             'fecha_contratacion' => ['sometimes', 'date', 'before_or_equal:today'],
             'disponibilidad' => ['nullable', 'boolean'],

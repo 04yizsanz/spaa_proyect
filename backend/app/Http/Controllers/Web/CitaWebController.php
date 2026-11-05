@@ -9,6 +9,7 @@ use App\Models\Empleado;
 use App\Models\Servicio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 use Throwable;
 
 /**
@@ -72,6 +73,9 @@ class CitaWebController extends Controller
     {
         $usuario = Auth::user();
 
+        $fechaMinima = now()->toDateString();
+        $zonaHoraria = config('app.timezone');
+
         try {
             if ($usuario->esCliente()) {
                 $cliente = $usuario->cliente;
@@ -100,7 +104,14 @@ class CitaWebController extends Controller
             $modoDemo  = true;
         }
 
-        return view('appointments.create', compact('clientes', 'empleados', 'servicios', 'modoDemo'));
+        return view('appointments.create', compact(
+            'clientes',
+            'empleados',
+            'servicios',
+            'modoDemo',
+            'fechaMinima',
+            'zonaHoraria'
+        ));
     }
 
     /**
@@ -126,8 +137,44 @@ class CitaWebController extends Controller
 
         $validated = $request->validate([
             'codigo_cita' => ['required', 'integer', 'unique:citas,codigo_cita'],
-            'fecha'       => ['required', 'date'],
-            'hora'        => ['required', 'date_format:H:i'],
+            'fecha'       => ['required', 'date_format:Y-m-d', 'after_or_equal:' . now()->toDateString()],
+            'hora'        => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) use ($request): void {
+                    if (! is_string($value) || ! preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $value)) {
+                        return;
+                    }
+
+                    if ($value < '09:00' || $value > '21:00') {
+                        $fail('La hora de la cita debe estar entre las 09:00 y las 21:00.');
+
+                        return;
+                    }
+
+                    $fecha = $request->input('fecha');
+                    if (! is_string($fecha) || ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+                        return;
+                    }
+
+                    $fechaValida = \DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
+
+                    if (! $fechaValida || $fechaValida->format('Y-m-d') !== $fecha) {
+                        return;
+                    }
+
+                    $ahora = now();
+                    if ($fechaValida->format('Y-m-d') !== $ahora->toDateString()) {
+                        return;
+                    }
+
+                    $fechaHoraCita = Carbon::createFromFormat('!Y-m-d H:i', "{$fecha} {$value}");
+
+                    if ($fechaHoraCita->lessThanOrEqualTo($ahora)) {
+                        $fail('Para hoy, selecciona una hora posterior a la hora actual.');
+                    }
+                },
+            ],
             'estado'      => ['nullable', 'in:pendiente,confirmada,completada,cancelada'],
             'cliente_id'  => ['required', 'integer', 'exists:clientes,cliente_id'],
             'empleado_id' => ['required', 'integer', 'exists:empleados,empleado_id'],
@@ -136,6 +183,8 @@ class CitaWebController extends Controller
             'codigo_cita.required' => 'El código de cita es obligatorio.',
             'codigo_cita.unique'   => 'Ya existe una cita con ese código.',
             'fecha.required'       => 'La fecha es obligatoria.',
+            'fecha.after_or_equal' => 'No puedes agendar una cita en una fecha anterior a hoy.',
+            'fecha.date_format'    => 'La fecha debe tener un formato válido.',
             'hora.required'        => 'La hora es obligatoria.',
             'hora.date_format'     => 'La hora debe tener el formato HH:MM.',
             'cliente_id.required'  => 'Debes seleccionar un cliente.',
