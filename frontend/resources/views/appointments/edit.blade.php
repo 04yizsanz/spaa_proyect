@@ -118,7 +118,11 @@
                         placeholder="Selecciona un servicio"
                         :value="$cita->servicio_id"
                         :options="$servicios->mapWithKeys(function ($s) {
-                            return [$s->servicio_id => $s->nombre . ' — $' . number_format($s->precio, 2)];
+                            $etiqueta = $s->nombre;
+                            if ((float) $s->precio > 0) {
+                                $etiqueta .= ' — ref. COP $' . number_format($s->precio, 0, ',', '.');
+                            }
+                            return [$s->servicio_id => $etiqueta];
                         })->toArray()"
                     />
 
