@@ -19,7 +19,7 @@ class StoreEmpleadoRequest extends FormRequest
             'documento' => ['required', 'string', 'max:20', 'unique:empleados,documento'],
             'correo' => ['nullable', 'email', 'max:100'],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'rol' => ['required', 'in:estilista,Estetisista,recepcionista,admin'],
+            'rol' => ['required', 'in:estilista,Estetisista,recepcionista,admin,administrador,manicurista'],
             'salario' => ['required', 'numeric', 'gt:0'],
             'fecha_contratacion' => ['required', 'date', 'before_or_equal:today'],
             'disponibilidad' => ['nullable', 'boolean'],

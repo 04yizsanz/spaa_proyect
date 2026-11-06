@@ -38,7 +38,6 @@
 <form
     method="POST"
     action="{{ route('citas.store') }}"
-    novalidate
     aria-label="Formulario para agendar una nueva cita"
 >
     @csrf
@@ -72,6 +71,8 @@
                         label="Fecha"
                         type="date"
                         :required="true"
+                        :min="$fechaMinima"
+                        help="No es posible agendar en fechas anteriores a hoy."
                     />
 
                     <x-form-field
@@ -79,7 +80,10 @@
                         label="Hora"
                         type="time"
                         :required="true"
-                        help="Formato 24h. Ej: 09:30"
+                        min="09:00"
+                        max="21:00"
+                        step="60"
+                        help="Horario de atención: 09:00 a 21:00."
                     />
 
                 </div>
@@ -118,7 +122,11 @@
                         :required="true"
                         placeholder="Selecciona un servicio"
                         :options="$servicios->mapWithKeys(function ($s) {
-                            return [$s->servicio_id => $s->nombre . ' — $' . number_format($s->precio, 2)];
+                            $etiqueta = $s->nombre;
+                            if ((float) $s->precio > 0) {
+                                $etiqueta .= ' — ref. COP $' . number_format($s->precio, 0, ',', '.');
+                            }
+                            return [$s->servicio_id => $etiqueta];
                         })->toArray()"
                     />
 
@@ -183,5 +191,74 @@
     </div>
 
 </form>
+
+@push('scripts')
+<script>
+    (() => {
+        const fechaInput = document.getElementById('field-fecha');
+        const horaInput = document.getElementById('field-hora');
+        const ayudaHora = document.getElementById('help-hora');
+
+        if (!fechaInput || !horaInput) return;
+
+        const zonaHoraria = @json($zonaHoraria);
+        const horaApertura = '09:00';
+        const horaCierre = '21:00';
+
+        function obtenerFechaYHoraLocal() {
+            const partes = new Intl.DateTimeFormat('en-CA', {
+                timeZone: zonaHoraria,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hourCycle: 'h23',
+            }).formatToParts(new Date());
+            const valores = Object.fromEntries(partes.map(({ type, value }) => [type, value]));
+
+            return {
+                fecha: `${valores.year}-${valores.month}-${valores.day}`,
+                hora: `${valores.hour}:${valores.minute}`,
+            };
+        }
+
+        function actualizarLimites() {
+            const ahora = obtenerFechaYHoraLocal();
+            fechaInput.min = ahora.fecha;
+
+            const esHoy = fechaInput.value === ahora.fecha;
+            let horaMinima = horaApertura;
+
+            if (esHoy && ahora.hora >= horaApertura) {
+                const minutos = Number(ahora.hora.slice(0, 2)) * 60
+                    + Number(ahora.hora.slice(3, 5))
+                    + 1;
+                horaMinima = `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`;
+            }
+
+            const sinHorariosDisponibles = esHoy && horaMinima > horaCierre;
+            horaInput.disabled = sinHorariosDisponibles;
+            horaInput.min = horaMinima;
+            horaInput.max = horaCierre;
+
+            if (horaInput.value && (horaInput.value < horaMinima || horaInput.value > horaCierre)) {
+                horaInput.value = '';
+            }
+
+            if (ayudaHora) {
+                ayudaHora.textContent = sinHorariosDisponibles
+                    ? 'Por hoy ya no hay horarios disponibles. Selecciona otra fecha.'
+                    : 'Horario de atención: 09:00 a 21:00.'
+                    + (esHoy ? ' Para hoy, solo puedes elegir una hora futura.' : '');
+            }
+        }
+
+        fechaInput.addEventListener('change', actualizarLimites);
+        actualizarLimites();
+        window.setInterval(actualizarLimites, 30_000);
+    })();
+</script>
+@endpush
 
 @endsection
