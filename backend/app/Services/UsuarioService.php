@@ -58,4 +58,12 @@ class UsuarioService
     {
         return $this->usuarioRepository->getByEmail($email);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->usuarioRepository->paginar($opciones);
+    }
 }

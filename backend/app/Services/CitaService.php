@@ -210,4 +210,12 @@ class CitaService
     {
         return Carbon::parse($hora)->format('H:i:s');
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->citaRepository->paginar($opciones);
+    }
 }

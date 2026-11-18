@@ -78,4 +78,12 @@ class ClienteService
     {
         return $this->clienteRepository->getByDocument($documento);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->clienteRepository->paginar($opciones);
+    }
 }

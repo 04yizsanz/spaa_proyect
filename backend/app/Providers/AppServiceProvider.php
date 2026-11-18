@@ -31,6 +31,7 @@ use App\Models\Usuario;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -119,6 +120,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // URLs en español para los recursos web: /proveedores/nuevo, /proveedores/5/editar
+        Route::resourceVerbs(['create' => 'nuevo', 'edit' => 'editar']);
+
         // Gestión de roles y usuarios: solo con el permiso explícito (denegación por defecto).
         Gate::define(
             'administrar-sistema',

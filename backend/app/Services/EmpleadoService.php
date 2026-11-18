@@ -58,4 +58,12 @@ class EmpleadoService
     {
         return $this->empleadoRepository->cambiarDisponibilidad($id, $disponibilidad);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->empleadoRepository->paginar($opciones);
+    }
 }

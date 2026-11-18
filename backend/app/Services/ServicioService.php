@@ -52,4 +52,12 @@ class ServicioService
     {
         return $this->servicioRepository->cambiarEstado($id, $activo);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->servicioRepository->paginar($opciones);
+    }
 }

@@ -7,6 +7,8 @@ use App\Models\Proveedor;
 
 class ProveedorRepository extends BaseRepository implements ProveedorInterface
 {
+    protected array $camposBusqueda = ['nombre', 'contacto', 'email', 'registro_tributario'];
+
     public function __construct(Proveedor $proveedor)
     {
         parent::__construct($proveedor);

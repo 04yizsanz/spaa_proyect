@@ -7,6 +7,8 @@ use App\Models\Producto;
 
 class ProductoRepository extends BaseRepository implements ProductoInterface
 {
+    protected array $camposBusqueda = ['nombre'];
+
     public function __construct(Producto $producto)
     {
         parent::__construct($producto);
