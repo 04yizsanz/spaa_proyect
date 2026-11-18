@@ -10,6 +10,20 @@ class StoreMovimientoInventarioRequest extends FormRequest
         return true;
     }
 
+    /**
+     * El formulario web envía la fecha como 'AAAA-MM-DDTHH:MM' (campo datetime-local);
+     * se normaliza al formato que exige la validación ('Y-m-d H:i:s').
+     */
+    protected function prepareForValidation(): void
+    {
+        $fecha = $this->input('fecha_hora');
+
+        if (is_string($fecha) && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/', $fecha)) {
+            $fecha = str_replace('T', ' ', $fecha);
+            $this->merge(['fecha_hora' => strlen($fecha) === 16 ? $fecha . ':00' : $fecha]);
+        }
+    }
+
     public function rules(): array
     {
         return [

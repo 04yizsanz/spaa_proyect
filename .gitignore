@@ -33,3 +33,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /backend/.phpunit.result.cache
+
+# Restos de la estructura anterior (Laravel ahora vive en backend/)
+/vendor
+/bootstrap

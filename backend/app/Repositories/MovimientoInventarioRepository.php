@@ -7,6 +7,8 @@ use App\Models\MovimientoInventario;
 
 class MovimientoInventarioRepository extends BaseRepository implements MovimientoInventarioInterface
 {
+    protected array $camposBusqueda = ['motivo'];
+
     public function __construct(MovimientoInventario $movimientoInventario)
     {
         parent::__construct($movimientoInventario);

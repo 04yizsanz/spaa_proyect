@@ -44,4 +44,12 @@ class MovimientoInventarioService
     {
         return $this->movimientoInventarioRepository->getByProducto($producto_id);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->movimientoInventarioRepository->paginar($opciones);
+    }
 }

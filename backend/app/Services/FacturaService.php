@@ -121,4 +121,12 @@ class FacturaService
             'total' => (string) $factura->total,
         ] + $extra);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->facturaRepository->paginar($opciones);
+    }
 }
