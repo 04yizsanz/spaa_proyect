@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class EmpleadoRepository extends BaseRepository implements EmpleadoInterface
 {
+    protected array $camposBusqueda = ['nombre', 'apellido', 'documento', 'correo'];
+
     /**
      * Inyecta el modelo Empleado al BaseRepository.
      */

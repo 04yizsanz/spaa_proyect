@@ -1,36 +1,21 @@
 {{--
     Componente: <x-form-field>
-
-    Agrupa etiqueta, campo y mensaje de validación en un bloque consistente.
+    Etiqueta + campo + ayuda + error de validación en un solo bloque.
 
     Props:
-    - $name     : nombre del campo (obligatorio para asociar label y error)
-    - $label    : texto de la etiqueta
-    - $type     : tipo de input (text, email, date, time, number, select, textarea)
-    - $required : boolean, marca el campo como obligatorio
-    - $value    : valor por defecto (usa old() si no se pasa)
-    - $help     : texto de ayuda opcional bajo el campo
-    - $options  : array ['value' => 'label'] para campos select
-    - $placeholder: texto de placeholder
+    - name, label
+    - type        : text | email | password | number | date | time | datetime-local | select | textarea
+    - required    : marca el campo como obligatorio
+    - value       : valor inicial (se usa old() si hubo un error de validación)
+    - help        : texto de ayuda bajo el campo
+    - options     : ['valor' => 'texto'] para los select
+    - placeholder
 
     Uso:
-        <x-form-field name="fecha" label="Fecha" type="date" :required="true" />
-
-        <x-form-field
-            name="estado"
-            label="Estado"
-            type="select"
-            :options="['pendiente' => 'Pendiente', 'confirmada' => 'Confirmada']"
-        />
-
-        <x-form-field
-            name="observaciones"
-            label="Observaciones"
-            type="textarea"
-            help="Máximo 300 caracteres."
-        />
+        <x-form-field name="nombre" label="Nombre" :required="true" />
+        <x-form-field name="metodo" label="Método" type="select"
+                      :options="['efectivo' => 'Efectivo', 'tarjeta' => 'Tarjeta']" />
 --}}
-
 @props([
     'name'        => '',
     'label'       => '',
@@ -43,128 +28,53 @@
 ])
 
 @php
-    // old() recupera el valor que el usuario ingresó antes de un error de validación
-    $currentValue = old($name, $value ?? '');
-    $hasError     = $errors->has($name);
-    $fieldId      = 'field-' . $name;
-    $helpId       = $help ? 'help-' . $name : null;
-    $errorId      = $hasError ? 'error-' . $name : null;
-
-    // Estilo base del campo
-    $fieldStyle = '
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        background-color: var(--color-warm-white);
-        color: var(--color-charcoal);
-        transition: border-color 0.15s, box-shadow 0.15s;
-        outline: none;
-    ';
-
-    $borderStyle = $hasError
-        ? 'border: 1px solid var(--color-red-soft);'
-        : 'border: 1px solid var(--color-beige-mid);';
-
-    $describedBy = collect([$helpId, $errorId])->filter()->implode(' ');
+    $valorActual = old($name, $value ?? '');
+    $tieneError  = $errors->has($name);
+    $idCampo     = 'field-' . $name;
+    $idAyuda     = $help ? 'help-' . $name : null;
+    $idError     = $tieneError ? 'error-' . $name : null;
+    $describe    = collect([$idAyuda, $idError])->filter()->implode(' ');
 @endphp
 
-<div class="flex flex-col gap-1.5">
-
-    {{-- Etiqueta --}}
+<div {{ $attributes->only('class')->merge(['class' => 'flex flex-col gap-1.5']) }}>
     @if ($label)
-        <label
-            for="{{ $fieldId }}"
-            class="text-sm font-medium"
-            style="color: var(--color-charcoal);"
-        >
+        <label for="{{ $idCampo }}" class="etiqueta">
             {{ $label }}
-            @if ($required)
-                <span
-                    class="ml-0.5"
-                    style="color: var(--color-red-soft);"
-                    aria-label="(obligatorio)"
-                    title="Campo obligatorio"
-                >*</span>
-            @endif
+            @if ($required)<span class="ml-0.5 text-danger" title="Campo obligatorio">*</span>@endif
         </label>
     @endif
 
-    {{-- Campo --}}
     @if ($type === 'select')
-        <select
-            id="{{ $fieldId }}"
-            name="{{ $name }}"
-            class="block"
-            style="{{ $fieldStyle }} {{ $borderStyle }}"
-            @if($required) required @endif
-            @if($hasError) aria-invalid="true" @endif
-            @if($describedBy) aria-describedby="{{ $describedBy }}" @endif
-            {{ $attributes->except(['class', 'style']) }}
-        >
+        <select id="{{ $idCampo }}" name="{{ $name }}" class="campo"
+                @required($required) @if($tieneError) aria-invalid="true" @endif
+                @if($describe) aria-describedby="{{ $describe }}" @endif
+                {{ $attributes->except('class') }}>
             @if ($placeholder)
-                <option value="" disabled {{ $currentValue === '' ? 'selected' : '' }}>
-                    {{ $placeholder }}
-                </option>
+                <option value="" @selected($valorActual === '' || $valorActual === null)>{{ $placeholder }}</option>
             @endif
-            @foreach ($options as $optVal => $optLabel)
-                <option value="{{ $optVal }}" {{ (string)$currentValue === (string)$optVal ? 'selected' : '' }}>
-                    {{ $optLabel }}
-                </option>
+            @foreach ($options as $valor => $texto)
+                <option value="{{ $valor }}" @selected((string) $valorActual === (string) $valor)>{{ $texto }}</option>
             @endforeach
         </select>
-
     @elseif ($type === 'textarea')
-        <textarea
-            id="{{ $fieldId }}"
-            name="{{ $name }}"
-            class="block resize-y"
-            style="{{ $fieldStyle }} {{ $borderStyle }} min-height: 100px;"
-            placeholder="{{ $placeholder }}"
-            @if($required) required @endif
-            @if($hasError) aria-invalid="true" @endif
-            @if($describedBy) aria-describedby="{{ $describedBy }}" @endif
-            {{ $attributes->except(['class', 'style']) }}
-        >{{ $currentValue }}</textarea>
-
+        <textarea id="{{ $idCampo }}" name="{{ $name }}" class="campo min-h-24 resize-y" placeholder="{{ $placeholder }}"
+                  @required($required) @if($tieneError) aria-invalid="true" @endif
+                  @if($describe) aria-describedby="{{ $describe }}" @endif
+                  {{ $attributes->except('class') }}>{{ $valorActual }}</textarea>
     @else
-        <input
-            type="{{ $type }}"
-            id="{{ $fieldId }}"
-            name="{{ $name }}"
-            value="{{ $currentValue }}"
-            class="block"
-            style="{{ $fieldStyle }} {{ $borderStyle }}"
-            placeholder="{{ $placeholder }}"
-            @if($required) required @endif
-            @if($hasError) aria-invalid="true" @endif
-            @if($describedBy) aria-describedby="{{ $describedBy }}" @endif
-            {{ $attributes->except(['class', 'style']) }}
-        >
+        <input type="{{ $type }}" id="{{ $idCampo }}" name="{{ $name }}" class="campo"
+               @if($type !== 'password') value="{{ $valorActual }}" @endif
+               placeholder="{{ $placeholder }}"
+               @required($required) @if($tieneError) aria-invalid="true" @endif
+               @if($describe) aria-describedby="{{ $describe }}" @endif
+               {{ $attributes->except('class') }}>
     @endif
 
-    {{-- Texto de ayuda --}}
     @if ($help)
-        <p
-            id="{{ $helpId }}"
-            class="text-xs"
-            style="color: var(--color-charcoal-muted);"
-        >
-            {{ $help }}
-        </p>
+        <p id="{{ $idAyuda }}" class="text-xs text-ink-muted">{{ $help }}</p>
     @endif
 
-    {{-- Error de validación de Laravel --}}
     @error($name)
-        <p
-            id="{{ $errorId }}"
-            class="text-xs font-medium"
-            style="color: var(--color-red-soft);"
-            role="alert"
-            aria-live="polite"
-        >
-            {{ $message }}
-        </p>
+        <p id="{{ $idError }}" class="text-xs font-medium text-danger" role="alert">{{ $message }}</p>
     @enderror
-
 </div>

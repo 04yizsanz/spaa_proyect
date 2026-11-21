@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ServicioRepository extends BaseRepository implements ServicioInterface
 {
+    protected array $camposBusqueda = ['nombre', 'descripcion'];
+
     /**
      * Inyecta el modelo Servicio al BaseRepository.
      */

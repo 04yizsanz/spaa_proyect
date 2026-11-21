@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 
 class UsuarioRepository extends BaseRepository implements UsuarioInterface
 {
+    protected array $camposBusqueda = ['nombre', 'apellido', 'documento', 'email'];
+
     public function __construct(Usuario $model)
     {
         parent::__construct($model);

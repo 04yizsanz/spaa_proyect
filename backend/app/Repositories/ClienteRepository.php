@@ -9,6 +9,20 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ClienteRepository extends BaseRepository implements ClienteInterface
 {
+    /**
+     * Los datos personales del cliente viven en su usuario: se busca allí.
+     */
+    protected function aplicarBusqueda(\Illuminate\Database\Eloquent\Builder $consulta, string $termino): void
+    {
+        $consulta->whereHas('usuario', function ($q) use ($termino) {
+            $q->where(function ($q) use ($termino) {
+                foreach (['nombre', 'apellido', 'documento', 'email'] as $campo) {
+                    $q->orWhere($campo, 'like', '%' . $termino . '%');
+                }
+            });
+        });
+    }
+
     public function __construct(Cliente $model)
     {
         parent::__construct($model);

@@ -49,4 +49,12 @@ class ProveedorService
     {
         return $this->proveedorRepository->getByRegistro_tributario($registro_tributario);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->proveedorRepository->paginar($opciones);
+    }
 }

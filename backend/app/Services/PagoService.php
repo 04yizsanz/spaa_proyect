@@ -107,4 +107,12 @@ class PagoService
             'usuario_id' => $actor->usuario_id,
         ] + $extra);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->pagoRepository->paginar($opciones);
+    }
 }

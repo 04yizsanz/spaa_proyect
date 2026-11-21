@@ -1,19 +1,3 @@
-
-1 de 726
-trabajo (trabajo)
-Recibidos
-
-cristian Paez
-Archivos adjuntos
-9:52 p.m. (hace 31 minutos)
-para mí
-
-Traducido: inglés
-español
-El Traductor puede cometer errores, así que verifica las traducciones
-
- 29 archivos adjuntos
-  •  Analizado por Gmail
 <?php
 
 use Illuminate\Database\Migrations\Migration;

@@ -16,7 +16,9 @@ use App\Interfaces\FacturaServicioInterface;
 use App\Repositories\FacturaServicioRepository;
 use App\Interfaces\RolInterface;
 use App\Repositories\RolRepository;
+use App\Interfaces\RecuperacionContrasenaInterface;
 use App\Interfaces\UsuarioInterface;
+use App\Repositories\RecuperacionContrasenaRepository;
 use App\Repositories\UsuarioRepository;
 use App\Interfaces\ClienteInterface;
 use App\Repositories\ClienteRepository;
@@ -31,6 +33,7 @@ use App\Models\Usuario;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -83,6 +86,11 @@ class AppServiceProvider extends ServiceProvider
             UsuarioRepository::class
         );
 
+        $this->app->bind(
+            RecuperacionContrasenaInterface::class,
+            RecuperacionContrasenaRepository::class
+        );
+
        $this->app->bind(
             ClienteInterface::class,
             ClienteRepository::class
@@ -119,6 +127,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // URLs en español para los recursos web: /proveedores/nuevo, /proveedores/5/editar
+        Route::resourceVerbs(['create' => 'nuevo', 'edit' => 'editar']);
+
         // Gestión de roles y usuarios: solo con el permiso explícito (denegación por defecto).
         Gate::define(
             'administrar-sistema',
@@ -136,6 +147,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Registro público de cuentas.
+        // Olvidé mi contraseña: máximo 5 solicitudes por minuto desde la misma IP.
+        RateLimiter::for('recuperacion', fn (Request $request) => Limit::perMinute(5)->by('recuperacion:'.$request->ip()));
+
         RateLimiter::for('registro', fn (Request $request) => Limit::perMinute(5)->by('registro:'.$request->ip()));
 
         // API (usado por throttleApi()): por usuario autenticado o, si no hay, por IP.

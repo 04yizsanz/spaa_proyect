@@ -49,4 +49,12 @@ class ProductoService
     {
         return $this->productoRepository->getByProveedor($proveedor_id);
     }
+
+    /**
+     * Listado paginado para las pantallas web (ver BaseInterface::paginar).
+     */
+    public function paginar(array $opciones = [])
+    {
+        return $this->productoRepository->paginar($opciones);
+    }
 }
