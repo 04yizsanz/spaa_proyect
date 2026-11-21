@@ -16,7 +16,9 @@ use App\Interfaces\FacturaServicioInterface;
 use App\Repositories\FacturaServicioRepository;
 use App\Interfaces\RolInterface;
 use App\Repositories\RolRepository;
+use App\Interfaces\RecuperacionContrasenaInterface;
 use App\Interfaces\UsuarioInterface;
+use App\Repositories\RecuperacionContrasenaRepository;
 use App\Repositories\UsuarioRepository;
 use App\Interfaces\ClienteInterface;
 use App\Repositories\ClienteRepository;
@@ -84,6 +86,11 @@ class AppServiceProvider extends ServiceProvider
             UsuarioRepository::class
         );
 
+        $this->app->bind(
+            RecuperacionContrasenaInterface::class,
+            RecuperacionContrasenaRepository::class
+        );
+
        $this->app->bind(
             ClienteInterface::class,
             ClienteRepository::class
@@ -140,6 +147,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Registro público de cuentas.
+        // Olvidé mi contraseña: máximo 5 solicitudes por minuto desde la misma IP.
+        RateLimiter::for('recuperacion', fn (Request $request) => Limit::perMinute(5)->by('recuperacion:'.$request->ip()));
+
         RateLimiter::for('registro', fn (Request $request) => Limit::perMinute(5)->by('registro:'.$request->ip()));
 
         // API (usado por throttleApi()): por usuario autenticado o, si no hay, por IP.

@@ -14,10 +14,13 @@
 
     <x-password-field name="password" label="Contraseña" autocomplete="current-password" />
 
-    <label class="flex items-center gap-2 text-sm text-ink-soft">
-        <input type="checkbox" name="remember" class="h-4 w-4 rounded border-line-strong accent-primary" @checked(old('remember'))>
-        Mantener la sesión iniciada
-    </label>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <label class="flex items-center gap-2 text-sm text-ink-soft">
+            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-line-strong accent-primary" @checked(old('remember'))>
+            Mantener la sesión iniciada
+        </label>
+        <a href="{{ route('password.request') }}" class="enlace text-sm">¿Olvidaste tu contraseña?</a>
+    </div>
 
     <x-button type="submit" class="w-full py-2.5">Iniciar sesión</x-button>
 </form>

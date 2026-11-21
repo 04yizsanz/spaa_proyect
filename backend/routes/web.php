@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\MovimientoInventarioWebController;
 use App\Http\Controllers\Web\PagoWebController;
 use App\Http\Controllers\Web\ProductoWebController;
 use App\Http\Controllers\Web\ProveedorWebController;
+use App\Http\Controllers\Web\RecuperacionContrasenaController;
 use App\Http\Controllers\Web\ServicioWebController;
 use App\Http\Controllers\Web\UsuarioWebController;
 use App\Models\Cita;
@@ -39,6 +40,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/login',    [AuthController::class, 'login'])->middleware('throttle:login');
     Route::get('/register',  [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registro');
+
+    // Olvidé mi contraseña
+    Route::get('/olvide-contrasena', [RecuperacionContrasenaController::class, 'mostrarSolicitud'])->name('password.request');
+    Route::post('/olvide-contrasena', [RecuperacionContrasenaController::class, 'enviarEnlace'])
+        ->middleware('throttle:recuperacion')->name('password.email');
+    Route::get('/restablecer-contrasena/{token}', [RecuperacionContrasenaController::class, 'mostrarRestablecer'])->name('password.reset');
+    Route::post('/restablecer-contrasena', [RecuperacionContrasenaController::class, 'restablecer'])
+        ->middleware('throttle:recuperacion')->name('password.update');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])
